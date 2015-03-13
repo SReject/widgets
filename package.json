@@ -1,0 +1,30 @@
+{
+  "name": "beam-widgets",
+  "version": "0.0.1",
+  "description": "Widget components of channels and chat.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/gulp/bin/gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MCProHosting/beam-widgets.git"
+  },
+  "author": "Connor Peet <connor@peet.io>",
+  "license": "Proprietary",
+  "bugs": {
+    "url": "https://github.com/MCProHosting/beam-widgets/issues"
+  },
+  "homepage": "https://github.com/MCProHosting/beam-widgets",
+  "devDependencies": {
+    "bluebird": "^2.9.14",
+    "chai": "^2.1.1",
+    "gulp": "^3.8.11",
+    "gulp-jscs": "^1.4.0",
+    "gulp-jshint": "^1.9.2",
+    "gulp-load-plugins": "^0.8.1",
+    "gulp-mocha": "^2.0.0",
+    "jshint-stylish": "^1.0.1",
+    "sinon": "^1.13.0"
+  }
+}
