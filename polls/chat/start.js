@@ -78,7 +78,6 @@ start.waitForEnd = function (channel, answers, duration) {
 
 /**
  * Triggered when we get a method to start a vote.
- * @param  {Object} channel
  * @param  {Object} user
  * @param  {Array} args
  * @param  {Function} next
