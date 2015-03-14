@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
-describe('chat starting', function () {
+describe('giveaway starting', function () {
     var start = require('../chat/start');
 
     it('sends the completion message', function () {
