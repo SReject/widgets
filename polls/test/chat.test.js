@@ -37,15 +37,15 @@ describe('poll chat', function () {
         var vote = require('../chat/vote');
         it('denies when no ongoing vote', function (done) {
             this.channel._ongoing_vote = Date.now() - 10000;
-            vote(this.user, [1], function (err) {
+            vote.call(this.ctx, this.user, [1], function (err) {
                 expect(err).to.equal('There\'s no vote right now!');
                 done();
             });
         });
 
         it('denies when already voted', function (done) {
-            var stub = this.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(true));
-            vote(this.user, [1], function (err) {
+            var stub = this.ctx.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(true));
+            vote.call(this.ctx, this.user, [1], function (err) {
                 expect(stub.calledWith('chat:1337:widget:poll:voters', 42)).to.be.true;
                 expect(err).to.equal('You already voted in this poll.');
                 done();
@@ -53,11 +53,11 @@ describe('poll chat', function () {
         });
 
         it('allows when not voted', function (done) {
-            var stub = this.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(false));
-            var hincrby = this.redis.HINCRBY = sinon.stub().returns(this.redis);
-            var sadd = this.redis.SADD = sinon.stub().returns(this.redis);
+            var stub = this.ctx.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(false));
+            var hincrby = this.ctx.redis.HINCRBY = sinon.stub().returns(this.ctx.redis);
+            var sadd = this.ctx.redis.SADD = sinon.stub().returns(this.ctx.redis);
 
-            vote(this.user, [1], function (err) {
+            vote.call(this.ctx, this.user, [1], function (err) {
                 expect(stub.calledWith('chat:1337:widget:poll:voters', 42)).to.be.true;
                 expect(hincrby.calledWith('chat:1337:widget:poll:responses', 1, 1)).to.be.true;
                 expect(sadd.calledWith('chat:1337:widget:poll:voters', 42)).to.be.true;
@@ -123,11 +123,11 @@ describe('poll chat', function () {
         });
 
         it('sets up redis correctly', function (done) {
-            var hmset = this.redis.hmset = sinon.stub().returns(this.redis);
-            var sadd = this.redis.sadd = sinon.stub().returns(this.redis);
-            var pexpire = this.redis.pexpire = sinon.stub().returns(this.redis);
+            var hmset = this.ctx.redis.hmset = sinon.stub().returns(this.ctx.redis);
+            var sadd = this.ctx.redis.sadd = sinon.stub().returns(this.ctx.redis);
+            var pexpire = this.ctx.redis.pexpire = sinon.stub().returns(this.ctx.redis);
 
-            start.setupRedis(this.channel, ['foo', 'bar'], 30, function (err) {
+            start.setupRedis(this.ctx.redis, this.channel, ['foo', 'bar'], 30, function (err) {
                 expect(err).to.be.undefined;
                 expect(hmset.calledWith('chat:1337:widget:poll:responses', { '0': 0, '1': 0 })).to.be.true;
                 expect(pexpire.calledWith('chat:1337:widget:poll:responses', 31000)).to.be.true;

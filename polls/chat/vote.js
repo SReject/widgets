@@ -8,7 +8,7 @@ var util = require('./util');
  */
 module.exports = function (user, args, callback) {
     var channel = user.getChannel();
-    var redis = channel.getRedis();
+    var redis = this.redis;
     // If there's no ongoing vote, error
     if (!util.hasVote(channel)) {
         return callback('There\'s no vote right now!');

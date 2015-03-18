@@ -10,12 +10,11 @@ var start = module.exports = {};
  * @param  {Function} next
  */
 start.hook = function (user, args, callback) {
-    var sql = user.getSQL();
     var channel = user.getChannel();
 
     // I know order by rand() is evil, but we're doing it on a relatively
     // small dataset, and there's not much of a better way :/
-    sql.query(
+    this.mysql.query(
         'SELECT user_name FROM ( ' +
             'SELECT DISTINCT user_name FROM chat_user ' +
             'WHERE online = 1 AND expires > NOW() AND channel = ?' +

@@ -25,11 +25,12 @@ start.validate = function (channel, question, answers, duration) {
 
 /**
  * Sets up the hash in Redis for responses to be stored in.
+ * @param  {Object} redis
  * @param  {Object}   channel
  * @param  {Array}   answers
  * @param  {Function} callback
  */
-start.setupRedis = function (channel, answers, duration, callback) {
+start.setupRedis = function (redis, channel, answers, duration, callback) {
     var responseSlug = util.responseSlug(channel);
     var votersSlug = util.votersSlug(channel);
 
@@ -39,7 +40,7 @@ start.setupRedis = function (channel, answers, duration, callback) {
         map[i] = 0;
     }
 
-    channel.getRedis().multi()
+    redis.multi()
         .hmset(responseSlug, map)
         // Set the expiry slightly later to prevent a race at the end.
         .pexpire(responseSlug, (duration + 1) * 1000)
@@ -49,10 +50,10 @@ start.setupRedis = function (channel, answers, duration, callback) {
         .exec(callback);
 };
 
-start.waitForEnd = function (channel, answers, duration) {
+start.waitForEnd = function (redis, channel, answers, duration) {
     // Set the interval to end the vote after the duration elapses.
     setTimeout(function () {
-        channel.getRedis().hgetall(util.responseSlug(channel), function (err, results) {
+        redis.hgetall(util.responseSlug(channel), function (err, results) {
             if (err) {
                 // Nothing we can do with an error at this point.
                 return;
@@ -86,6 +87,8 @@ start.hook = function (user, args, callback) {
     // Validate the data.
     var channel = user.getChannel();
     var question = args[0], answers = args[1], duration = args[2];
+    var redis = this.redis;
+
     var err = start.validate(channel, question, answers, duration);
     if (err) {
         return callback(err);
@@ -93,7 +96,7 @@ start.hook = function (user, args, callback) {
 
     // At this point, we're good. Emit the poll start event and
     // set set up the response hash.
-    start.setupRedis(channel, answers, duration, function (err) {
+    start.setupRedis(redis, channel, answers, duration, function (err) {
         if (err) {
             return callback(err);
         }
@@ -105,7 +108,7 @@ start.hook = function (user, args, callback) {
             endsAt: Date.now() + duration * 1000
         });
 
-        start.waitForEnd(channel, answers, duration);
+        start.waitForEnd(redis, channel, answers, duration);
 
         // And call back, we're good!
         callback(undefined, 'Poll started.');
