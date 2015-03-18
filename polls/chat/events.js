@@ -5,7 +5,6 @@
  * @param  {Object} data
  */
 module.exports.start = function (channel, data) {
-    console.log(arguments);
     channel._ongoing_vote = data.endsAt;
     channel.broadcast('PollStart', data);
 };
