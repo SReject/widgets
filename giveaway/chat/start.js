@@ -1,4 +1,5 @@
 var config = require('./config');
+var clip = require('../../clip');
 var start = module.exports = {};
 
 /**
@@ -14,7 +15,7 @@ start.hook = function (user, args, callback) {
 
     // I know order by rand() is evil, but we're doing it on a relatively
     // small dataset, and there's not much of a better way :/
-    this.mysql.query(
+    clip.mysql.query(
         'SELECT user_name FROM ( ' +
             'SELECT DISTINCT user_name FROM chat_user ' +
             'WHERE online = 1 AND expires > NOW() AND channel = ?' +

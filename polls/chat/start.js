@@ -1,4 +1,5 @@
 var util = require('./util');
+var clip = require('../../clip');
 var start = module.exports = {};
 
 /**
@@ -30,7 +31,7 @@ start.validate = function (channel, question, answers, duration) {
  * @param  {Array}   answers
  * @param  {Function} callback
  */
-start.setupRedis = function (redis, channel, answers, duration, callback) {
+start.setupRedis = function (channel, answers, duration, callback) {
     var responseSlug = util.responseSlug(channel);
     var votersSlug = util.votersSlug(channel);
 
@@ -40,7 +41,7 @@ start.setupRedis = function (redis, channel, answers, duration, callback) {
         map[i] = 0;
     }
 
-    redis.multi()
+    clip.redis.multi()
         .hmset(responseSlug, map)
         // Set the expiry slightly later to prevent a race at the end.
         .pexpire(responseSlug, (duration + 1) * 1000)
@@ -50,10 +51,10 @@ start.setupRedis = function (redis, channel, answers, duration, callback) {
         .exec(callback);
 };
 
-start.waitForEnd = function (redis, channel, answers, duration) {
+start.waitForEnd = function (channel, answers, duration) {
     // Set the interval to end the vote after the duration elapses.
     setTimeout(function () {
-        redis.hgetall(util.responseSlug(channel), function (err, results) {
+        clip.redis.hgetall(util.responseSlug(channel), function (err, results) {
             if (err) {
                 // Nothing we can do with an error at this point.
                 return;
@@ -69,7 +70,7 @@ start.waitForEnd = function (redis, channel, answers, duration) {
             }
 
             // Then emit them across the chat servers.
-            channel.emit(
+            channel.publish(
                 'PollEnd',
                 { voters: voters, responses: responses }
             );
@@ -96,19 +97,19 @@ start.hook = function (user, args, callback) {
 
     // At this point, we're good. Emit the poll start event and
     // set set up the response hash.
-    start.setupRedis(redis, channel, answers, duration, function (err) {
+    start.setupRedis(channel, answers, duration, function (err) {
         if (err) {
             return callback(err);
         }
 
-        channel.emit('PollStart', {
+        channel.publish('PollStart', {
             q: args[0],
             answers: answers,
             duration: duration,
             endsAt: Date.now() + duration * 1000
         });
 
-        start.waitForEnd(redis, channel, answers, duration);
+        start.waitForEnd(channel, answers, duration);
 
         // And call back, we're good!
         callback(undefined, 'Poll started.');

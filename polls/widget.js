@@ -11,6 +11,8 @@ module.exports = {
     },
     // Description to display to users.
     description: 'Allow people to create polls and let viewers vote on them!',
+    // Other modules that must be loaded for this to work.
+    dependencies: [],
     // Additional permissions roles should get to use the widget.
     permissions: {
         User:  ['chat:poll_vote'],

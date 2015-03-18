@@ -1,6 +1,10 @@
 module.exports = function (hook) {
     hook.method('permission', 'vote:start', ['poll_start', require('./start').hook]);
     hook.method('permission', 'vote:choose', ['poll_vote', require('./vote')]);
-    hook.event('PollStart', require('./events').start);
-    hook.event('PollEnd', require('./events').end);
+
+    hook.on('channel:new', function (channel) {
+        console.log('newed');
+        channel.on('PollStart', require('./events').start);
+        channel.on('PollEnd', require('./events').end);
+    });
 };
