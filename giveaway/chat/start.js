@@ -69,7 +69,7 @@ start.results = function (channel, data) {
  * @param  {String} body
  */
 start.message = function (channel, body) {
-    channel.sendChatMessage({
+    channel.sendMessage({
         username: 'GiveawayBot',
         id: -1,
         role: 'Admin'

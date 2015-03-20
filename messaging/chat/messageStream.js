@@ -11,7 +11,7 @@ var _ = require('lodash');
 function MessageStream (data, pipes) {
     events.EventEmitter.call(this);
     this.data = data || [];
-    this.pipes = pipes || [];
+    this.transforms = pipes || [];
     this.aborted = false;
     this.context = { stream: this };
 }
@@ -31,7 +31,7 @@ MessageStream.prototype.setContext = function (context) {
  * @return {MessageStream}
  */
 MessageStream.prototype.pipe = function (pipe) {
-    this.pipes.push(pipe);
+    this.transforms.push(pipe);
     return this;
 };
 
@@ -65,13 +65,13 @@ MessageStream.prototype.abort = function (err) {
 /**
  * Sends out data through attached pipes.
  */
-MessageStream.prototype.run = function (_pipe) {
-    var pipe = _pipe || 0;
+MessageStream.prototype.run = function (idx) {
+    var transform = idx || 0;
     var self = this;
 
     // If we reached the end of the pipes, we're done! Trim off empty
     // strings or nullish values that may have arisen.
-    if (pipe >= this.pipes.length) {
+    if (transform >= this.transforms.length) {
         return this.emit('end', _.filter(this.data));
     }
 
@@ -79,55 +79,20 @@ MessageStream.prototype.run = function (_pipe) {
     // Keep the number of callbacks to go until we're done with the
     // current pipe. After the end, we'll "start" on the next level.
     var waiting = this.data.length;
-    // Store the data and clear "this" data, as we'll
-    // rebuilt it from the transform.
-    var data = this.data;
-    this.data = [];
-    // Context object the transform will be run in.
-    // Extend the local context atop of it.
-    var cb = {};
-    for (var key in this.context) {
-        cb[key] = this.context[key];
+    if (waiting === 0) {
+        return this.run(transform + 1);
     }
 
-    /**
-     * When "next" is called we'll assume the processing for a particular
-     * chunk is complete, and we'll start the next pipe if necessary.
-     * @param  {*}   err
-     */
-    cb.next = function (err) {
-        // Don't do anything if we're aborted.
-        if (self.aborted) {
-            return cb;
-        }
+    this.transforms[transform].call(this.context, this.data, function (err, data) {
         // On errors, just abort the parsing. We'll assume the pipe
         // handler
         if (err) {
             self.abort(err);
-            return cb;
+        } else {
+            self.data = data;
+            self.run(transform + 1);
         }
-        // Start the next pipe if we're done this "level"
-        if (--waiting === 0) {
-            self.run(pipe + 1);
-        }
-
-        return cb;
-    };
-    /**
-     * Pushes new data to be passed on to the next pipe level.
-     * @param  {*} data
-     */
-    cb.push = function (data) {
-        self.data.push(data);
-        return cb;
-    };
-
-
-    // Now loop through all the data. Skip any items that aren't strings,
-    // as they must have already been parsed into objects.
-    for (var i = 0; i < data.length; i++) {
-        this.pipes[pipe].call(cb, data[i]);
-    }
+    });
 };
 
 module.exports = MessageStream;

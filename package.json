@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/MCProHosting/beam-widgets",
   "devDependencies": {
-    "bluebird": "^2.9.14",
     "chai": "^2.1.1",
     "gulp": "^3.8.11",
+    "gulp-istanbul": "^0.6.0",
     "gulp-jscs": "^1.4.0",
     "gulp-jshint": "^1.9.2",
     "gulp-load-plugins": "^0.8.1",
@@ -28,8 +28,9 @@
     "sinon": "^1.13.0"
   },
   "dependencies": {
+    "bluebird": "^2.9.14",
     "lodash": "^3.5.0",
-    "through2": "^0.6.3",
+    "node-uuid": "^1.4.3",
     "toposort": "^0.2.10"
   }
 }

@@ -4,6 +4,6 @@ module.exports = function () {
     return {
         getId: sinon.stub().returns(1337),
         broadcast: sinon.spy(),
-        sendChatMessage: sinon.spy()
+        sendMessage: sinon.spy()
     };
 };

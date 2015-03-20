@@ -17,6 +17,21 @@ gulp.task('mocha', function () {
     gulp.src(src, { read: false }).pipe($.mocha());
 });
 
+gulp.task('cover', function (done) {
+    var testSrc = sources('/test/**/*.js').concat(['test/**/*.js']);
+    var widgetSrc = sources('/chat/**/*.js').concat(['!**/chat/index.js']);
+
+    gulp.src(widgetSrc)
+        .pipe($.istanbul({ includeUntested: true }))
+        .pipe($.istanbul.hookRequire())
+        .on('finish', function () {
+            gulp.src(testSrc, { read: false })
+                .pipe($.mocha())
+                .pipe($.istanbul.writeReports())
+                .on('end', done);;
+        });
+});
+
 gulp.task('test', ['lint', 'mocha']);
 
 /**
@@ -25,10 +40,7 @@ gulp.task('test', ['lint', 'mocha']);
  * @return {Array}
  */
 function sources (fragment) {
-    var sources = [];
-    for (var key in widgets) {
-        sources.push(widgets[key].path + fragment);
-    }
-
-    return sources;
+    return widgets.map(function (source) {
+        return source.path + fragment;
+    });
 }
