@@ -3,7 +3,7 @@
 The messaging widget provides core message functionality to allow users to broadcast messages to others in the channel.
 
  * Events:
-    * [ChatMessage(Object message)](#chatmessageobject-message)
+    * Emits and listens for [ChatMessage(Object message)](#chatmessageobject-message)
  * Methods:
     * [msg(String message)](#msgstring-message)
  * Provides:
@@ -15,7 +15,7 @@ The messaging widget provides core message functionality to allow users to broad
 
 ### ChatMessage(Object message)
 
-A ChatMessage event is sent whenever a user
+A ChatMessage event is sent whenever a user sends a message. When we receive a ChatMessage event, we broadcast it down to users.
 
 ## Methods
 

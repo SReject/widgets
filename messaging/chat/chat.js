@@ -5,6 +5,8 @@ var pipe = require('./pipe');
 var clip = require('../../clip');
 var chat = module.exports = {};
 
+function noop () {}
+
 /**
  * Parses a message through the pipes, running a callback
  * with the completed array of components.
@@ -27,15 +29,20 @@ chat.parseMessage = function (user, message, callback) {
 
 /**
  * Parses a message and then sends it.
+ * @param  {Object} channel
  * @param  {Object} user
- * @param  {String} msg
+ * @param  {String} message
+ * @param  {Function} callback
  */
-chat.sendMessage = function (channel, user, message) {
+chat.sendMessage = function (channel, user, message, callback) {
+    callback = callback || noop;
+
     chat.parseMessage(user, message, function (err, message) {
         if (err) {
-            clip.log.error(err);
+            callback(err);
         } else {
             chat.sendMessageRaw(channel, user, message);
+            callback();
         }
     });
 };
@@ -76,8 +83,9 @@ chat.method = function (user, args, callback) {
         return callback('You must write a message!');
     }
 
-    chat.sendMessage(user.getChannel(), user, args[0]);
-    callback(null, 'Message sent');
+    chat.sendMessage(user.getChannel(), user, args[0], function (err) {
+        callback(err, 'Message sent.');
+    });
 };
 
 /**
@@ -95,4 +103,8 @@ chat.bindUser = function (user) {
  */
 chat.bindChannel = function (channel) {
     channel.sendMessage = _.bind(chat.sendMessage, null, channel);
+
+    channel.on('ChatMessage', function (event, data) {
+        channel.broadcast('ChatMessage', data);
+    });
 };
