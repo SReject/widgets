@@ -10,7 +10,7 @@ describe('giveaway starting', function () {
         expect(this.channel.sendMessage.calledWith({
             username: 'GiveawayBot',
             id: -1,
-            role: 'Admin'
+            roles: ['Admin']
         }, 'connor4312 won the giveaway!')).to.be.true;
     });
 

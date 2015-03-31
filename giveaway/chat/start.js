@@ -72,7 +72,7 @@ start.message = function (channel, body) {
     channel.sendMessage({
         username: 'GiveawayBot',
         id: -1,
-        role: 'Admin'
+        roles: ['Admin']
     }, body);
 };
 
