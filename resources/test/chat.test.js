@@ -9,12 +9,12 @@ describe('resource', function () {
         resources.bindUser(this.user);
         resources.list = {};
         resources.load('a');
-        resources.load('b', function (r) { return r.id; });
+        resources.load('b', function (r) { return r.map(function (k) { return k.id; }); }, 'asdf');
     });
 
-    it('load does not add duplicate handlers', function () {
+    it('requires alias is handled types', function () {
         expect(function () {
-            resources.load('b');
+            resources.load('c', function () {});
         }).to.throw;
     });
 
@@ -47,16 +47,14 @@ describe('resource', function () {
                 { id: 1, type: 'a' },
                 { id: 2, type: 'b' },
                 { id: 3, type: 'b' },
-                { id: 4, type: 'c' },
-                { id: 5, type: 'c' }
+                { id: 4, type: 'c' }
             ]]));
 
-            resources.get.call(this.user, 'b').then(function (results) {
+            resources.get.call(this.user, 'asdf').then(function (results) {
                 expect(results).to.deep.equal([2, 3]);
                 expect(user._resourceCache).to.deep.equal({
                     a: [{ id: 1, type: 'a' }],
-                    b: [2, 3],
-                    c: [{ id: 4, type: 'c' }, { id: 5, type: 'c' }]
+                    asdf: [2, 3]
                 });
                 done();
             }).catch(done);

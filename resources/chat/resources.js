@@ -9,18 +9,21 @@ var resources = module.exports = {};
 resources.list = {};
 
 /**
- * Registers a new resource type to be loaded when users join.
+ * Registers a new resource type to be loaded when users join. If an alias
+ * is given, that can be passed to .get() rather than the type. If you
+ * specify a custom handler (which takes an array of resources and should
+ * return "some" value) then an alias is required.
+ *
  * @param  {String} type
  * @param  {Function=} handler
+ * @param  {String=} alias
  */
-resources.load = function (type, handler) {
-    // Currently, if multiple modules load the same type of resource
-    // we don't support handler functions. Throw an error if it happens.
-    if (resources.list[type] && handler) {
-        throw new Error('Cannot load multiple of a type using a handler!');
-    } else {
-        resources.list[type] = handler || null;
+resources.load = function (type, handler, alias) {
+    if (handler && !alias) {
+        throw new Error('Handled types must be aliased!');
     }
+
+    resources.list[alias || type] = { handler: handler, type: type };
 };
 
 /**
@@ -36,24 +39,25 @@ resources.bindUser = function (user) {
  * @return {String}
  */
 resources.inQuery = function () {
-    return '\'' + _.keys(resources.list).join('\', \'') + '\'';
+    return '\'' + _.pluck(resources.list, 'type').join('\', \'') + '\'';
 };
 
 /**
  * Method that should be attached to the user (or, at least, run in the
  * context of a user) which returns resources of the type that
  * the user has access to.
+ *
  * @param {String} type
  * @return {Promise}
  */
-resources.get = function (type) {
+resources.get = function (name) {
     var user = this;
     var list = resources.list;
 
     // If we already got resources for the user, just resolve the
-    // type that we're looking for.
+    // resource that we're looking for.
     if (user._resourceCache) {
-        return Bluebird.resolve(user._resourceCache[type] || []);
+        return Bluebird.resolve(user._resourceCache[name] || []);
     }
 
     return clip.mysql.queryAsync(
@@ -65,18 +69,23 @@ resources.get = function (type) {
         '    where `group_users__user_groups`.`user_groups` = ? ' +
         ')) and `resource`.`type` IN (' + resources.inQuery() + ');', [user.id, user.id]
     ).spread(function (resources) {
-        user._resourceCache = _(resources)
+        // Get the unique IDs and group the output by its "type"
+        var groupings = _(resources)
             .uniq('id')
             .groupBy('type')
-            .mapValues(function (resources, type) {
-                if (list[type]) {
-                    return resources.map(list[type]);
-                } else {
-                    return resources;
-                }
-            })
             .value();
 
-        return user._resourceCache[type] || [];
+        // Set the resource cache based on everything we registered to
+        // list, passing data through a handler function if necessary.
+        user._resourceCache = _.mapValues(list, function (record, key) {
+            var data = groupings[record.type];
+            if (record.handler) {
+                return record.handler(data);
+            } else {
+                return data;
+            }
+        });
+
+        return user._resourceCache[name] || [];
     });
 };

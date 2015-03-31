@@ -7,7 +7,7 @@ The messaging widget provides core message functionality to allow users to broad
  * Methods:
     * [msg(String message)](#msgstring-message)
  * Provides:
-    * [Hook.messagePipe(Number priority, Function handler(String message, Function callback))](#)
+    * [Hook.messagePipe(Number priority, Function handler(String message, Function callback))](#hookmessagepipenumber-priority-function-handlerstring-message-function-callback)
     * [User.sendMessage(String message)](#usersendmessagestring-message)
     * [Channel.sendMessage(Object user, String message)](#channelsendmessageobject-user-string-message)
  * Frontend: [yes](#frontend)

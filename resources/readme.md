@@ -2,26 +2,10 @@
 
 The messaging widget provides core message functionality to allow users to broadcast messages to others in the channel.
 
- * Events:
-    * Emits and listens for [ChatMessage(Object message)](#chatmessageobject-message)
- * Methods:
-    * [msg(String message)](#msgstring-message)
  * Provides:
-    * [hook.loadResource(String type[, Function handler(Object resource)])](#usersendmessagestring-message)
-    * [User.getResource(String type) -> Promise](#channelsendmessageobject-user-string-message)
- * Frontend: noe
-
-## Events
-
-### ChatMessage(Object message)
-
-A ChatMessage event is sent whenever a user sends a message. When we receive a ChatMessage event, we broadcast it down to users.
-
-## Methods
-
-### msg(String message)
-
-Triggers the sending of the "message". It will be passed through hooked pipes before getting emitted into a [ChatMessage](#ChatMessage) event, which may then be passed down to clients.
+    * [hook.loadResource(String type[, Function handler(Object resource)])](#hookloadresourcestring-type-function-handlerobject-resource)
+    * [User.getResource(String type) -> Promise](#usergetresourcestring-type---promise)
+ * Frontend: no
 
 ## Provides
 
