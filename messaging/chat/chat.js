@@ -58,7 +58,7 @@ chat.sendMessageRaw = function (channel, user, msg) {
         id: uuid.v1(),
         user_name: user.username,
         user_id: user.id,
-        user_role: user.role,
+        user_roles: user.roles,
         message: msg
     };
 

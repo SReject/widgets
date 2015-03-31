@@ -225,7 +225,7 @@ describe('messaging chat', function () {
             expect(chat.sendMessageRaw.calledWith(this.channel, this.user, [{ type: 'text', data: 'hello world' }])).to.be.true;
         });
         it('binds to channel', function () {
-            var user = { id: 2, role: 'Developer', username: 'connor4312' };
+            var user = { id: 2, roles: ['Developer'], username: 'connor4312' };
             chat.bindChannel(this.channel);
             this.channel.sendMessage(user, 'hello world');
             expect(chat.sendMessageRaw.calledWith(this.channel, user, [{ type: 'text', data: 'hello world' }])).to.be.true;
