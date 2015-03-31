@@ -9,13 +9,7 @@ describe('resource', function () {
         resources.bindUser(this.user);
         resources.list = {};
         resources.load('a');
-        resources.load('b', function (r) { return r.map(function (k) { return k.id; }); }, 'asdf');
-    });
-
-    it('requires alias is handled types', function () {
-        expect(function () {
-            resources.load('c', function () {});
-        }).to.throw;
+        resources.load('b', 'asdf', function (r) { return r.map(function (k) { return k.id; }); });
     });
 
     it('builds the "in" query', function () {

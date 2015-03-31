@@ -7,7 +7,7 @@ module.exports = {
     authors: ['connor4312'],
     // Hooks for Beam chat servers/frontend.
     hooks: {
-        // chat: require('./chat')
+        chat: require('./chat')
     },
     // Description to display to users.
     description: 'This widget parses chat messages and injects emoticons.',

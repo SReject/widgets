@@ -18,11 +18,7 @@ resources.list = {};
  * @param  {Function=} handler
  * @param  {String=} alias
  */
-resources.load = function (type, handler, alias) {
-    if (handler && !alias) {
-        throw new Error('Handled types must be aliased!');
-    }
-
+resources.load = function (type, alias, handler) {
     resources.list[alias || type] = { handler: handler, type: type };
 };
 

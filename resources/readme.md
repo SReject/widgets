@@ -9,9 +9,11 @@ The messaging widget provides core message functionality to allow users to broad
 
 ## Provides
 
-### Hook.loadResource(String type[, Function handler(Object resource)])
+### Hook.loadResource(String type[, String alias, Function handler(Object[] resource)])
 
-Calling this in a widget hook will cause that resource type to be loaded on the user, when created. If a `handler` is passed, it will act as a map function - it will be called with a resource and should return some "parsed" object.
+Calling this in a widget hook will cause that resource type to be loaded on the user, when created.
+
+You can modify the results by passing an alias and the handler. The alias will be used to retrieve the modified resources in User.getResource. The handler will be invoked with the resources of the given type, and should return what you want resolved in getResource.
 
 ### User.getResource(String type) -> Promise
 
