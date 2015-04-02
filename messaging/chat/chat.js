@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var uuid = require('node-uuid');
 
+var MessageStream = require('./messageStream');
 var pipe = require('./pipe');
 var clip = require('../../clip');
 var chat = module.exports = {};
@@ -13,9 +14,8 @@ function noop () {}
  * @param  {String}   message
  * @param  {Function} callback
  */
-chat.parseMessage = function (user, message, callback) {
-    var stream = pipe.message(message);
-    stream.setContext(_.extend({ user: user }, this));
+chat.parseMessage = function (channel, user, message, callback) {
+    var stream = new MessageStream([message], channel.messagePipes);
 
     stream.on('aborted', function (err) {
         callback(err);
@@ -24,7 +24,7 @@ chat.parseMessage = function (user, message, callback) {
         callback(null, message);
     });
 
-    stream.run();
+    stream.setUser(user).run();
 };
 
 /**
@@ -37,7 +37,7 @@ chat.parseMessage = function (user, message, callback) {
 chat.sendMessage = function (channel, user, message, callback) {
     callback = callback || noop;
 
-    chat.parseMessage(user, message, function (err, message) {
+    chat.parseMessage(channel, user, message, function (err, message) {
         if (err) {
             callback(err);
         } else {
@@ -73,7 +73,7 @@ chat.sendMessageRaw = function (channel, user, msg) {
 };
 
 /**
- * Triggered when we get a method to start a vote.
+ * Triggered when we get a method to send a message.
  * @param  {Object} user
  * @param  {Array} args
  * @param  {Function} next
@@ -102,6 +102,7 @@ chat.bindUser = function (user) {
  * @param  {Object} channel
  */
 chat.bindChannel = function (channel) {
+    channel.messagePipes = pipe.create(channel);
     channel.sendMessage = _.bind(chat.sendMessage, null, channel);
 
     channel.on('ChatMessage', function (event, data) {

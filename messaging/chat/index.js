@@ -4,5 +4,5 @@ module.exports = function (hook) {
     hook.on('user:join', require('./chat').bindUser);
     hook.on('channel:new', require('./chat').bindChannel);
 
-    hook.messagePipe = require('./pipe').add;
+    hook.message = { pipe: require('./pipe').add, priority: require('./pipe').priority };
 };

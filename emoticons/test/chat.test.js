@@ -29,7 +29,7 @@ describe('emoticons', function () {
     });
 
     it('parses simple', function (done) {
-        emoticons.pipe.call(this, [':)'], function (err, result) {
+        emoticons.pipe(this.channel).run(this.user, [':)'], function (err, result) {
             expect(err).to.be.undefined;
             expect(result).to.deep.equal([{ type: 'emoticon', text: ':)', path: 'default/1F604' }]);
             done();
@@ -37,7 +37,7 @@ describe('emoticons', function () {
     });
 
     it('does not trip over objects', function (done) {
-        emoticons.pipe.call(this, [':)', { foo: 'bar' }, 'asdf', ':astronaut'], function (err, result) {
+        emoticons.pipe(this.channel).run(this.user, [':)', { foo: 'bar' }, 'asdf', ':astronaut'], function (err, result) {
             expect(err).to.be.undefined;
             expect(result).to.deep.equal([
                 { type: 'emoticon', text: ':)', path: 'default/1F604' },

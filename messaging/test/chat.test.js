@@ -20,7 +20,7 @@ describe('messaging chat', function () {
                 });
                 stream.push('lorem ipsum');
                 stream.push('dolor');
-                stream.pipe(transforms.identity);
+                stream.pipe(transforms.identity());
                 stream.run();
             });
         });
@@ -32,7 +32,7 @@ describe('messaging chat', function () {
                     done();
                 });
                 stream.push('lorem ipsum');
-                stream.pipe(transforms.finalize);
+                stream.pipe(transforms.finalize());
                 stream.run();
             });
 
@@ -43,7 +43,7 @@ describe('messaging chat', function () {
                 });
                 stream.push('lorem ipsum');
                 stream.push(' dolor');
-                stream.pipe(transforms.finalize);
+                stream.pipe(transforms.finalize());
                 stream.run();
             });
 
@@ -60,7 +60,7 @@ describe('messaging chat', function () {
                 stream.push({ foo: 'bar' });
                 stream.push('sit');
                 stream.push(' dolor');
-                stream.pipe(transforms.finalize);
+                stream.pipe(transforms.finalize());
                 stream.run();
             });
         });
@@ -72,7 +72,7 @@ describe('messaging chat', function () {
                     expect(out).to.deep.equal([]);
                     done();
                 });
-                stream.pipe(transforms.splitWords);
+                stream.pipe(transforms.splitWords());
                 stream.run();
             });
 
@@ -82,7 +82,7 @@ describe('messaging chat', function () {
                     done();
                 });
                 stream.push('lorem ipsum dolor');
-                stream.pipe(transforms.splitWords);
+                stream.pipe(transforms.splitWords());
                 stream.run();
             });
 
@@ -92,7 +92,7 @@ describe('messaging chat', function () {
                     done();
                 });
                 stream.push('   helloo   ');
-                stream.pipe(transforms.splitWords);
+                stream.pipe(transforms.splitWords());
                 stream.run();
             });
 
@@ -102,7 +102,7 @@ describe('messaging chat', function () {
                     done();
                 });
                 stream.push('   helloo  world ');
-                stream.pipe(transforms.splitWords);
+                stream.pipe(transforms.splitWords());
                 stream.run();
             });
 
@@ -115,7 +115,7 @@ describe('messaging chat', function () {
                 stream.push('c');
                 stream.push({});
                 stream.push(' d e');
-                stream.pipe(transforms.splitWords);
+                stream.pipe(transforms.splitWords());
                 stream.run();
             });
         });
@@ -134,7 +134,7 @@ describe('messaging chat', function () {
                 expect(out).to.deep.equal(['dollarz', 'ipsum', 'lorem']);
                 done();
             });
-            stream.pipe(function (data, cb) { cb(null, data.reverse()); }).run();
+            stream.pipe({ run: function (user, data, cb) { cb(null, data.reverse()); }}).run();
         });
 
         it('aborts when an error is thrown', function (done) {
@@ -143,9 +143,9 @@ describe('messaging chat', function () {
                 done();
             });
 
-            stream.pipe(function (data, cb) {
+            stream.pipe({ run: function (user, data, cb) {
                 cb('err!');
-            }).pipe(function () {
+            }}).pipe(function () {
                 assert.fail();
             }).run();
         });
@@ -159,15 +159,6 @@ describe('messaging chat', function () {
         });
         afterEach(function () {
             pipe.transforms = oldTransforms;
-        });
-
-        it('finalizes by default', function (done) {
-            var stream = pipe.message('hello world');
-            stream.on('end', function (data) {
-                expect(data).to.deep.equal([{ type: 'text', data: 'hello world' }]);
-                done();
-            });
-            stream.run();
         });
 
         it('adds new pipes 1', function () {
@@ -186,16 +177,18 @@ describe('messaging chat', function () {
 
     describe('methods', function () {
         var chat = require('../chat/chat');
+        var pipe = require('../chat/pipe');
 
         beforeEach(function () {
             sinon.stub(chat, 'sendMessageRaw');
+            this.channel.messagePipes = pipe.create(this.channel);
         });
         afterEach(function () {
             chat.sendMessageRaw.restore();
         });
 
         it('parses the message', function () {
-            chat.parseMessage({}, 'hello world', function (err, message) {
+            chat.parseMessage(this.channel, this.user, 'hello world', function (err, message) {
                 expect(err).to.not.be.ok;
                 expect(message).to.deep.equal([{ type: 'text', data: 'hello world' }]);
             });
@@ -225,10 +218,9 @@ describe('messaging chat', function () {
             expect(chat.sendMessageRaw.calledWith(this.channel, this.user, [{ type: 'text', data: 'hello world' }])).to.be.true;
         });
         it('binds to channel', function () {
-            var user = { id: 2, roles: ['Developer'], username: 'connor4312' };
             chat.bindChannel(this.channel);
-            this.channel.sendMessage(user, 'hello world');
-            expect(chat.sendMessageRaw.calledWith(this.channel, user, [{ type: 'text', data: 'hello world' }])).to.be.true;
+            this.channel.sendMessage(this.user, 'hello world');
+            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, [{ type: 'text', data: 'hello world' }])).to.be.true;
         });
     });
 });

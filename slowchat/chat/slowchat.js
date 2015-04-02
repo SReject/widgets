@@ -3,22 +3,47 @@ var config = require('./config');
 var slowchat = module.exports = {};
 
 /**
+ * Returns the identified for a user, `i+id`. This is so that the keys in
+ * the cache object are valid identifiers, preventing V8 from putting
+ * it into has table mode.
+ * @param  {User} user
+ * @return {String}
+ */
+function ident (user) {
+    return 'i' + user;
+}
+
+/**
+ * The SlowChat widget is responsible for enforcing chat rate limits for
+ * users of a channel.
+ * @param {Channel} channel
+ */
+function SlowChat (channel) {
+    this.channel = channel;
+    this.duration = channel.getPreferences('channel:slowchat') || config.defaultSlowchat;
+    this.booted = false;
+}
+
+/**
  * Binds slowchat settings on the channel - adds a property
  * "lastUserMessage", which is a map of user IDs to timestamps
  * for when the user last chatted. It also listens for incoming
  * messages to update the timing, and registers a cleanup event.
- *
- * @param  {Channel} channel
- */
-slowchat.bind = function (channel) {
+ * @return {SlowChat}
+ * */
+SlowChat.prototype.boot = function () {
+    var channel = this.channel;
+    var duration = this.duration;
     var interval;
+
+    this.booted = true;
 
     // The record of user names to dates.
     channel.lastUserMessage = {};
 
     // When we get a new message, update the user's last message time.
     channel.on('ChatMessage', function (message) {
-        channel.lastUserMessage['i' + message.user_id] = Date.now();
+        channel.lastUserMessage[ident(message.user_id)] = Date.now();
     });
 
     // When the channel is destroyed, stop
@@ -33,18 +58,26 @@ slowchat.bind = function (channel) {
     interval = setInterval(function () {
         var now = Date.now();
         channel.lastUserMessage = _.omit(channel.lastUserMessage, function (last) {
-            return now - last > slowchat.getDuration(channel);
+            return now - last > duration;
         });
     }, config.trimInterval);
+
+    return this;
 };
 
 /**
- * Returns the slowchat time for a channel.
- * @param  {Channel} channel
- * @return {Number}
+ * Returns whether the user is in a state to send a message. It returns
+ * false if the user can't bypass slowchat and their last messages was
+ * within the "slowchat" preference value.
+ *
+ * @param  {User} user
+ * @return {Boolean}
  */
-slowchat.getDuration = function (channel) {
-    return channel.getPreferences('channel:slowchat') || config.defaultSlowchat;
+SlowChat.prototype.canSend = function (user) {
+    var lastMessage = this.channel.lastUserMessage[ident(user.getId())];
+
+    return lastMessage && !user.hasPermission('bypass_slowchat') &&
+           Date.now() - lastMessage < this.duration;
 };
 
 
@@ -53,14 +86,25 @@ slowchat.getDuration = function (channel) {
  * @param  {Array}   data
  * @param  {Function} cb
  */
-slowchat.pipe = function (data, cb) {
-    var id = 'i' + this.user.getId();
-    var channel = this.user.getChannel();
-    var lastMessage = channel.lastUserMessage[id];
+SlowChat.prototype.run = function (user, data, cb) {
+    if (!this.booted) {
+        this.boot();
+    }
 
-    if (lastMessage && Date.now() - lastMessage < slowchat.getDuration(channel)) {
+    if (this.canSend(user)) {
         cb('Please wait a moment before sending more messages.');
     } else {
         cb(undefined, data);
     }
 };
+
+/**
+ * Creates a new slowchat bound to the channel.
+ * @param  {Channel} channel
+ * @return {SlowChat}
+ */
+SlowChat.pipe = function (channel) {
+    return new SlowChat(channel);
+};
+
+module.exports = SlowChat;

@@ -7,7 +7,8 @@ The messaging widget provides core message functionality to allow users to broad
  * Methods:
     * [msg(String message)](#msgstring-message)
  * Provides:
-    * [Hook.messagePipe(Number priority, Function handler(String message, Function callback))](#hookmessagepipenumber-priority-function-handlerstring-message-function-callback)
+    * [Hook.message.pipe(Number priority, Function handler(String message, Function callback))](#hookmessagepipenumber-priority-function-handlerstring-message-function-callback)
+    * [Hook.message.priority](#hookmessagepriority)
     * [User.sendMessage(String message)](#usersendmessagestring-message)
     * [Channel.sendMessage(Object user, String message)](#channelsendmessageobject-user-string-message)
  * Frontend: [yes](#frontend)
@@ -26,14 +27,31 @@ Triggers the sending of the "message". It will be passed through hooked pipes be
 
 ## Provides
 
-### Hook.messagePipe(Number priority, Function handler(String message, Function callback))
+### Hook.message.pipe(Priority priority, Function handler(String message, Function callback))
 
-Adds a new function to message transform list. It should take arguments (message, next) and invoke the `callback` with the the results, or an error. The message will initially be an array of strings. As it is passed through various transforms, some of the strings may be converted into object components. At the end of the pipe (past priority 100) there will be no strings left in the array.
+Adds a new function to message transform list. It should take arguments (message, next) and invoke the `callback` with the the results, or an error. The priority, described below, determines at which point your transform will be run.
 
-Priorities closer to zero will be run first - these should be the least expensive operations. In general:
- - 0 to 20 are reserved for message verifications which determine if it can actually be sent.
- - 50 is reserved for splitWords. Transforms after this can expect to run word-by-word.
- - 100 is reserved for finalization that turns remaining strings into "text" components.
+The message will initially be an array of strings. As it is passed through various transforms, the strings will converted into object components. At the end of the pipe, there will be no strings left in the array. You should generally not act on components that have already been converted to components, only on strings. For example, this is the code that parses emoticons:
+```js
+for (var i = 0, l = message.length; i < l; i++) {
+    if (typeof message[i] === 'string') {
+        injectEmoticonInto(message[i]);
+    }
+}
+```
+
+> Pro tip: if you want to check if something is key in an object, it's around 100x faster to check `typeof foo === 'string' && obj[foo]` than simply `obj[foo]`. Let V8 optimize your code!
+
+### Hook.message.priority
+
+This is an enum that provides the following values:
+
+| Level    | Use   |
+| -------- | ----- |
+| `FILTER` | Lightweight verification handlers that determine whether the message can be sent at all.
+| `NORMAL` | Normal priority events will be called after FILTER and before SPLIT. Chunks of unmodified strings will be in the message.
+| `SPLIT`  | Transforms that have the SPLIT priority will be run after all remaining strings have been split by words. This makes some types of transforms much more efficient and easy to write.
+| `LEAST`  | LEAST priority transforms will be run after every remaining string in the message has been converted to a component.
 
 ### User.sendMessage(String message)
 

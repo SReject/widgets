@@ -1,5 +1,3 @@
 module.exports = function (hook) {
-    hook.on('channel:new', require('./slowchat').bind);
-
-    hook.messagePipe(2, require('./slowchat').pipe);
+    hook.message.pipe(hook.message.priority.FILTER, require('./slowchat').pipe);
 };

@@ -13,17 +13,9 @@ function MessageStream (data, pipes) {
     this.data = data || [];
     this.transforms = pipes || [];
     this.aborted = false;
-    this.context = { stream: this };
+    this.user = null;
 }
 util.inherits(MessageStream, events.EventEmitter);
-
-/**
- * Updates the context in which piped functions are run.
- * @param {Object} context
- */
-MessageStream.prototype.setContext = function (context) {
-    _.extend(this.context, context);
-};
 
 /**
  * Adds a new pipe filter to the message stream.
@@ -32,6 +24,16 @@ MessageStream.prototype.setContext = function (context) {
  */
 MessageStream.prototype.pipe = function (pipe) {
     this.transforms.push(pipe);
+    return this;
+};
+
+/**
+ * Sets the user that will be provided to pipe functions.
+ * @param {Function} pipe
+ * @return {MessageStream}
+ */
+MessageStream.prototype.setUser = function (user) {
+    this.user = user;
     return this;
 };
 
@@ -83,9 +85,9 @@ MessageStream.prototype.run = function (idx) {
         return this.run(transform + 1);
     }
 
-    this.transforms[transform].call(this.context, this.data, function (err, data) {
+    this.transforms[transform].run(this.user, this.data, function (err, data) {
         // On errors, just abort the parsing. We'll assume the pipe
-        // handler
+        // handled it.
         if (err) {
             self.abort(err);
         } else {

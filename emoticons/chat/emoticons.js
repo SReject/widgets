@@ -1,45 +1,27 @@
-var rawPacks = require('beam-emoticons');
+var packs = require('beam-emoticons');
+var Pipe = require('./pipe');
 var clip = require('../../clip');
 var _ = require('lodash');
-var packs = {};
 
-var emoticons = module.exports = {};
-
-// Do some initial parsing on the packs we got to make them easier to load
-// later, on our loadResource handler.
-(function () {
-    for (var key in rawPacks) {
-        packs[key] = {};
-        for (var emote in rawPacks[key].emoticons) {
-            packs[key][emote] = { name: rawPacks[key].emoticons[emote], pack: key };
+function Emoticons () {
+    // Do some initial parsing on the packs we got to make them easier to load
+    // later, on our loadResource handler.
+    this.packs = {};
+    for (var key in packs) {
+        this.packs[key] = {};
+        for (var emote in packs[key].emoticons) {
+            this.packs[key][emote] = { name: packs[key].emoticons[emote], pack: key };
         }
     }
-})();
+}
 
 /**
- * Pipe function for emoticons, expects to come after words have been split.
- * Replaces emoticons (like ":)") in the message with proper components.
- * @param  {Array}   message
- * @param  {Function} callback
+ * Returns a new Pipe object for emoticons.
+ * @param  {Channel} channel
+ * @return {Pipe}
  */
-emoticons.pipe = function (message, callback) {
-    this.user.getResource('emoticonPack').then(function (pack) {
-
-        for (var i = 0, l = message.length; i < l; i++) {
-            if (typeof message[i] === 'string') {
-                var emoticon = pack[message[i]];
-                if (emoticon) {
-                    message[i] = {
-                        type: 'emoticon',
-                        text: message[i],
-                        path: emoticon.pack + '/' + emoticon.name
-                    };
-                }
-            }
-        }
-
-        callback(undefined, message);
-    });
+Emoticons.prototype.pipe = function (channel) {
+    return new Pipe(this.packs, channel);
 };
 
 /**
@@ -50,11 +32,11 @@ emoticons.pipe = function (message, callback) {
  * @param  {Object[]} resources
  * @return {Object}
  */
-emoticons.pack = function (resources) {
+Emoticons.prototype.pack = function (resources) {
     var output = {};
 
     for (var i = 0, l = resources.length; i < l; i++) {
-        var pack = packs[resources[i].remote_path];
+        var pack = this.packs[resources[i].remote_path];
         if (!pack) {
             clip.log.warn('Tried to load unknown resource pack `' + resources[i].remote_path + '`!');
             continue;
@@ -67,3 +49,5 @@ emoticons.pack = function (resources) {
 
     return output;
 };
+
+module.exports = new Emoticons();

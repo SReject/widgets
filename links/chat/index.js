@@ -1,3 +1,3 @@
 module.exports = function (hook) {
-    hook.messagePipe(30, require('./links').pipe);
+    hook.message.pipe(hook.message.priority.NORMAL, require('./links').pipe);
 };

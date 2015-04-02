@@ -34,12 +34,20 @@ pipe.add = function (priority, transform) {
     pipe.transforms.splice(idx, 0, obj);
 };
 
+pipe.priority = {
+    FILTER: 10,
+    NORMAL: 35,
+    SPLIT: 75,
+    LEAD: 150
+};
+
 /**
- * Pipes a message through our transform streams.
- * @param  {String} message
- * @return {stream.Readable}
+ * Instatiates a series of message pipes for a channel.
+ * @param  {Channel} channel
+ * @return {Array}
  */
-pipe.message = function (message) {
-    var ts = _.pluck(pipe.transforms, 'transform');
-    return new MessageStream([message], ts);
+pipe.create = function (channel) {
+    return pipe.transforms.map(function (t) {
+        return t.transform(channel);
+    });
 };
