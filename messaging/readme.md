@@ -7,7 +7,7 @@ The messaging widget provides core message functionality to allow users to broad
  * Methods:
     * [msg(String message)](#msgstring-message)
  * Provides:
-    * [Hook.message.pipe(Number priority, Function handler(String message, Function callback))](#hookmessagepipenumber-priority-function-handlerstring-message-function-callback)
+    * [Hook.message.pipe(Priority priority, Object handler)](#hookmessagepipepriority-priority-object-handler)
     * [Hook.message.priority](#hookmessagepriority)
     * [User.sendMessage(String message)](#usersendmessagestring-message)
     * [Channel.sendMessage(Object user, String message)](#channelsendmessageobject-user-string-message)
@@ -27,17 +27,27 @@ Triggers the sending of the "message". It will be passed through hooked pipes be
 
 ## Provides
 
-### Hook.message.pipe(Priority priority, Function handler(String message, Function callback))
+### Hook.message.pipe(Priority priority, Object handler)
 
-Adds a new function to message transform list. It should take arguments (message, next) and invoke the `callback` with the the results, or an error. The priority, described below, determines at which point your transform will be run.
+Adds a new message transform to the list. The handler is expected to have a method `.pipe(Channel channel)` that instantiates a new transform for a particular channel (internally these are created and attached to new channels upon their creation). The transform itself is expected to have a method with the signature `.run(User user, Array data, Function callback)`.
 
-The message will initially be an array of strings. As it is passed through various transforms, the strings will converted into object components. At the end of the pipe, there will be no strings left in the array. You should generally not act on components that have already been converted to components, only on strings. For example, this is the code that parses emoticons:
+ * The `user` will simply be the user object who sent the message.
+ * See below for the `data`.
+ * The `callback` should be called with an error as its first argument, or undefined as the first object and the processed data as its second argument.
+
+The message will initially be an array of strings. As it is passed through various transforms, the strings will converted into object components. At the end of the pipe, there will be no strings left in the array. You should generally not act on components that have already been converted to components, only on strings. For example, this could be some code that parses emoticons:
+
 ```js
-for (var i = 0, l = message.length; i < l; i++) {
-    if (typeof message[i] === 'string') {
-        injectEmoticonInto(message[i]);
+Handler.prototype.run = function (user, data, callback) {
+    var output = [];
+    for (var i = 0, l = message.length; i < l; i++) {
+        if (typeof message[i] === 'string') {
+            output.push(injectEmoticonInto(message[i]));
+        }
     }
-}
+
+    callback(undefined, output);
+};
 ```
 
 > Pro tip: if you want to check if something is key in an object, it's around 100x faster to check `typeof foo === 'string' && obj[foo]` than simply `obj[foo]`. Let V8 optimize your code!
