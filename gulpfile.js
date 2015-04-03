@@ -51,7 +51,7 @@ gulp.task('cover', function (done) {
  * Javascript without having to include all the application logic.
  */
 gulp.task('buildmanifest', function (done) {
-    var data = widgets.map(function (widget) {
+    var data = _.values(widgets).map(function (widget) {
         return _.pick(widget, ['name', 'default', 'authors', 'description', 'permissions']);
     });
 
