@@ -4,7 +4,8 @@
   "description": "Widget components of channels and chat.",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/gulp/bin/gulp test"
+    "test": "node node_modules/gulp/bin/gulp test",
+    "cover": "node node_modules/gulp/bin/gulp cover"
   },
   "repository": {
     "type": "git",
