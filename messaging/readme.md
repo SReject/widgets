@@ -11,6 +11,7 @@ The messaging widget provides core message functionality to allow users to broad
     * [Hook.message.priority](#hookmessagepriority)
     * [User.sendMessage(String message)](#usersendmessagestring-message)
     * [Channel.sendMessage(Object user, String message)](#channelsendmessageobject-user-string-message)
+    * [Channel.sendMessageRaw(Object user, String message)](#channelsendmessagetawobject-user-string-message)
  * Frontend: [yes](#frontend)
 
 ## Events
@@ -67,9 +68,9 @@ This is an enum that provides the following values:
 
 Triggers a [Channel.sendMessage(Object user, String message)](#channelsendmessageobject-user-string-message) with the "user" filled in.
 
-### Channel.sendMessage(Object user, String message)
+### Channel.sendMessageRaw(Object user, String message)
 
-Triggers a message to be sent on the channel, from the given "user". The user can be an actual User object, or any object that has the properties `id`, `username`, and `role`.
+Triggers a message to be sent on the channel, from the given "user". It does not do any parsing on the method, so things like emoticons will not be added. The user can be an actual User object, or any object that has the properties `id`, `username`, and `role`.
 
 It triggers a ChatMessage event with an object with the properties:
 
@@ -77,6 +78,10 @@ It triggers a ChatMessage event with an object with the properties:
  * `String id` - a UUIDv1 unique to the message. The sending timestamp can be extracted from this.
  * `String user_name`, `String user_id`, `String user_role` - information about the sending user.
  * `Object[] message` - An array of chat components.
+
+### Channel.sendMessage(User user, String message)
+
+Triggers a message to be sent on the channel. It does run the full parsing chain on the message, so (unlike the above method) the full User object is needed.
 
 ## Frontend
 

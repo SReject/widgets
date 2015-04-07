@@ -2,5 +2,5 @@
 // It'll fill in properties:
 //  - redis (promisified node-redis client)
 //  - mysql (promisified node-mysql client)
-//  - log (bunyan logger)
+//  - log   (bunyan logger)
 module.exports = {};

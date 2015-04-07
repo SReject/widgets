@@ -6,6 +6,7 @@ module.exports = function () {
     channel.getId = sinon.stub().returns(1337);
     channel.broadcast = sinon.spy();
     channel.sendMessage = sinon.spy();
+    channel.sendMessageRaw = sinon.spy();
     channel.preferences = {};
     channel.getPreferences = function (e) { return channel.preferences[e]; };
 
