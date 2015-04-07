@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/gulp/bin/gulp test",
-    "compile": "node node_modules/gulp/bin/gulp compile",
-    "prepublish": "npm run compile"
+    "cover": "node node_modules/gulp/bin/gulp cover"
   },
   "repository": {
     "type": "git",
@@ -19,17 +18,22 @@
   },
   "homepage": "https://github.com/MCProHosting/beam-widgets",
   "devDependencies": {
-    "bluebird": "^2.9.14",
     "chai": "^2.1.1",
     "gulp": "^3.8.11",
+    "gulp-istanbul": "^0.6.0",
     "gulp-jscs": "^1.4.0",
     "gulp-jshint": "^1.9.2",
-    "gulp-load-plugins": "^0.8.1",
+    "gulp-load-plugins": "^0.9.0",
     "gulp-mocha": "^2.0.0",
     "jshint-stylish": "^1.0.1",
     "sinon": "^1.13.0"
   },
   "dependencies": {
-    "lodash": "^3.6.0"
+    "beam-emoticons": "git+https://github.com/MCProHosting/beam-emoticons.git",
+    "bluebird": "^2.9.14",
+    "linkify-it": "^1.0.0",
+    "lodash": "^3.5.0",
+    "node-uuid": "^1.4.3",
+    "toposort": "^0.2.10"
   }
 }

@@ -1,6 +1,7 @@
 var Bluebird = require('bluebird');
 var sinon = require('sinon');
 var expect = require('chai').expect;
+var clip = require('../../clip');
 
 describe('poll chat', function () {
     describe('utils', function () {
@@ -44,7 +45,7 @@ describe('poll chat', function () {
         });
 
         it('denies when already voted', function (done) {
-            var stub = this.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(true));
+            var stub = clip.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(true));
             vote(this.user, [1], function (err) {
                 expect(stub.calledWith('chat:1337:widget:poll:voters', 42)).to.be.true;
                 expect(err).to.equal('You already voted in this poll.');
@@ -53,9 +54,9 @@ describe('poll chat', function () {
         });
 
         it('allows when not voted', function (done) {
-            var stub = this.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(false));
-            var hincrby = this.redis.HINCRBY = sinon.stub().returns(this.redis);
-            var sadd = this.redis.SADD = sinon.stub().returns(this.redis);
+            var stub = clip.redis.sismemberAsync = sinon.stub().returns(Bluebird.resolve(false));
+            var hincrby = clip.redis.HINCRBY = sinon.stub().returns(clip.redis);
+            var sadd = clip.redis.SADD = sinon.stub().returns(clip.redis);
 
             vote(this.user, [1], function (err) {
                 expect(stub.calledWith('chat:1337:widget:poll:voters', 42)).to.be.true;
@@ -123,9 +124,9 @@ describe('poll chat', function () {
         });
 
         it('sets up redis correctly', function (done) {
-            var hmset = this.redis.hmset = sinon.stub().returns(this.redis);
-            var sadd = this.redis.sadd = sinon.stub().returns(this.redis);
-            var pexpire = this.redis.pexpire = sinon.stub().returns(this.redis);
+            var hmset = clip.redis.hmset = sinon.stub().returns(clip.redis);
+            var sadd = clip.redis.sadd = sinon.stub().returns(clip.redis);
+            var pexpire = clip.redis.pexpire = sinon.stub().returns(clip.redis);
 
             start.setupRedis(this.channel, ['foo', 'bar'], 30, function (err) {
                 expect(err).to.be.undefined;

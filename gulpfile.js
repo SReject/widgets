@@ -26,10 +26,6 @@ gulp.task('mocha', function () {
     gulp.src(src, { read: false }).pipe($.mocha());
 });
 
-/**
- * Cover generates a code coverage report for widgets, using
- * istanbul.
- */
 gulp.task('cover', function (done) {
     var testSrc = sources('/test/**/*.js').concat(['test/**/*.js']);
     var widgetSrc = sources('/chat/**/*.js').concat(['!**/chat/index.js']);
@@ -45,20 +41,6 @@ gulp.task('cover', function (done) {
         });
 });
 
-/**
- * Buildmanifest pulls out widget metadata into a single external file. This
- * allows us to include relevant widget data in frontend (Browserify)
- * Javascript without having to include all the application logic.
- */
-gulp.task('buildmanifest', function (done) {
-    var data = _.values(widgets).map(function (widget) {
-        return _.pick(widget, ['name', 'default', 'authors', 'description', 'permissions']);
-    });
-
-    fs.writeFile('./manifest.json', JSON.stringify(data), done);
-});
-
-// Runs tests on sources.
 gulp.task('test', ['lint', 'mocha']);
 // Runs test on sources and, if they pass, compiles a manifest.
 gulp.task('compile', ['test', 'buildmanifest']);
@@ -69,10 +51,7 @@ gulp.task('compile', ['test', 'buildmanifest']);
  * @return {Array}
  */
 function sources (fragment) {
-    var sources = [];
-    for (var key in widgets) {
-        sources.push(widgets[key].path + fragment);
-    }
-
-    return sources;
+    return widgets.map(function (source) {
+        return source.path + fragment;
+    });
 }

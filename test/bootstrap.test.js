@@ -1,9 +1,12 @@
 var redis = require('./fixture/redis');
+var mysql = require('./fixture/mysql');
 var channel = require('./fixture/channel');
 var user = require('./fixture/user');
+var clip = require('../clip');
 
 beforeEach(function () {
-    this.redis = redis();
+    clip.redis = redis();
+    clip.mysql = mysql();
     this.channel = channel(this.redis);
     this.user = user(this.channel);
 });

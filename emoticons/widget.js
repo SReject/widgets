@@ -1,6 +1,6 @@
 module.exports = {
     // Package name
-    name: 'Me Widget',
+    name: 'Emoticons',
     // Whether it's enabled by default
     default: true,
     // Beam username(s) of the author(s).
@@ -10,8 +10,7 @@ module.exports = {
         chat: require('./chat')
     },
     // Description to display to users.
-    description: 'Allows users to "emote" in chat by entering /me before ' +
-                 'their message.',
+    description: 'This widget parses chat messages and injects emoticons.',
     // Other modules that must be loaded for this to work.
-    dependencies: ['messaging']
+    dependencies: ['messaging', 'resources']
 };

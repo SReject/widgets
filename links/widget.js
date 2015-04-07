@@ -1,6 +1,6 @@
 module.exports = {
     // Package name
-    name: 'Polls',
+    name: 'Chat Links',
     // Whether it's enabled by default
     default: true,
     // Beam username(s) of the author(s).
@@ -10,14 +10,14 @@ module.exports = {
         chat: require('./chat')
     },
     // Description to display to users.
-    description: 'Allow people to create polls and let viewers vote on them!',
+    description: 'Provides functionality that restricts posting of links in ' +
+                 'chat, as well as making links clickable.',
     // Other modules that must be loaded for this to work.
-    dependencies: [],
+    dependencies: ['messaging'],
     // Additional permissions roles should get to use the widget.
     permissions: {
-        User:  ['chat:poll_vote'],
-        Mod:   ['chat:poll_vote', 'chat:poll_start'],
-        Admin: ['chat:poll_vote', 'chat:poll_start'],
-        Owner: ['chat:poll_vote', 'chat:poll_start']
+        Mod:   ['chat:bypass_links'],
+        Admin: ['chat:bypass_links'],
+        Owner: ['chat:bypass_links']
     }
 };

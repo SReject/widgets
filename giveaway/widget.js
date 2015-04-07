@@ -11,6 +11,8 @@ module.exports = {
     },
     // Description to display to users.
     description: 'Type /giveaway to select a random viewer to win a prize!',
+    // Other modules that must be loaded for this to work.
+    dependencies: ['messaging'],
     // Additional permissions roles should get to use the widget.
     permissions: {
         User:  [],

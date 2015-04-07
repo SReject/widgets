@@ -1,37 +1,42 @@
-var me = module.exports = {};
+var clip = require('../../clip');
 
-me.hook = function (user, args, callback) {
-    var channel = user.getChannel();
-    var message = args[0];
+/**
+ * The "me" transform changes messages prefixed with a "/me" into a single
+ * component which is displayed in a special manner on the frontend.
+ */
+function Me () {
+    this.prefix = '/me ';
+}
 
-    try {
-        // Try and verify the message.
-        me._verifyMessage(message);
+/**
+ * Turns the message into a single "me" component before passing it on.
+ * @param  {User}    user
+ * @param  {Array}   data
+ * @param  {Function} cb
+ */
+Me.prototype.run = function (user, data, callback) {
+    var msg = data[0];
+    var len = this.prefix.length;
 
-        // If no errors were thrown, we'll be here, and can emit the message.
-        channel.emit('MeEvent', {
-            user_name: user.username,
-            user_id: user.id,
-            user_roles: user.roles,
-            message: message
-        });
+    // If the message was tampered with, log a error but don't break...
+    if (data.length !== 1 || typeof msg !== 'string') {
+        clip.error('Message was tampered with prior to the "me" widget getting it.');
+        return callback(undefined, data);
+    }
 
-        // Finally, call the callback with no error!
-        return callback(null, {success: true});
-    } catch (err) {
-        // If any err was thrown, catch it, and redirect the err message back
-        // into the callback as the first argument (sig. that the thing was not
-        // completed succesfully).
-        if (err) {
-            return callback(err, null);
-        }
+    if (msg.slice(0, len) === this.prefix) {
+        callback(undefined, [{ type: 'me', text: msg.slice(len) }]);
+    } else {
+        callback(undefined, data);
     }
 };
 
-me._verifyMessage = function (message, callback) {
-    if (typeof message !== 'string') {
-        throw 'Could not preform /me because your message is not a string!';
-    } else if (message.length > 200) {
-        throw 'Could not preform /me because your message was too long!';
-    }
+/**
+ * Creates a new "Me" message piper.
+ * @return {Me}
+ */
+Me.pipe = function () {
+    return new Me();
 };
+
+module.exports = Me;

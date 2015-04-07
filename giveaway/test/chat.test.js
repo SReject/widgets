@@ -3,10 +3,11 @@ var sinon = require('sinon');
 
 describe('giveaway starting', function () {
     var start = require('../chat/start');
+    var clip = require('../../clip');
 
     it('sends the completion message', function () {
         start.results(this.channel, { user: 'connor4312' });
-        expect(this.channel.sendChatMessage.calledWith({
+        expect(this.channel.sendMessageRaw.calledWith({
             username: 'GiveawayBot',
             id: -1,
             roles: ['Admin']
@@ -38,5 +39,40 @@ describe('giveaway starting', function () {
         messageStub.restore();
         resultStub.restore();
         clock.restore();
+    });
+
+    describe('hook', function () {
+        beforeEach(function () {
+            sinon.stub(start, 'countdown');
+        });
+        afterEach(function () {
+            start.countdown.restore();
+        });
+
+        it('errors with no results', function (done) {
+            clip.mysql = { query: function (query, args, cb) {
+                expect(args).to.deep.equal([1337]);
+                cb(null, []);
+            }};
+
+            start.hook(this.user, [], function (err) {
+                expect(err).to.be.defined;
+                expect(start.countdown.called).to.be.false;
+                done();
+            });
+        });
+
+        it('calls when successful', function (done) {
+            clip.mysql = { query: function (query, args, cb) {
+                expect(args).to.deep.equal([1337]);
+                cb(null, [{}]);
+            }};
+
+            start.hook(this.user, [], function (err) {
+                expect(err).not.to.be.defined;
+                expect(start.countdown.called).to.be.true;
+                done();
+            });
+        });
     });
 });
