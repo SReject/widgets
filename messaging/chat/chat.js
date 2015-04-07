@@ -104,6 +104,7 @@ chat.bindUser = function (user) {
 chat.bindChannel = function (channel) {
     channel.messagePipes = pipe.create(channel);
     channel.sendMessage = _.bind(chat.sendMessage, null, channel);
+    channel.sendMessageRaw = _.bind(chat.sendMessageRaw, null, channel);
 
     channel.on('ChatMessage', function (event, data) {
         channel.broadcast('ChatMessage', data);

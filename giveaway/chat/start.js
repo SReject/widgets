@@ -69,7 +69,7 @@ start.results = function (channel, data) {
  * @param  {String} body
  */
 start.message = function (channel, body) {
-    channel.sendMessage({
+    channel.sendMessageRaw({
         username: 'GiveawayBot',
         id: -1,
         roles: ['Admin']

@@ -7,7 +7,7 @@ describe('giveaway starting', function () {
 
     it('sends the completion message', function () {
         start.results(this.channel, { user: 'connor4312' });
-        expect(this.channel.sendMessage.calledWith({
+        expect(this.channel.sendMessageRaw.calledWith({
             username: 'GiveawayBot',
             id: -1,
             roles: ['Admin']
