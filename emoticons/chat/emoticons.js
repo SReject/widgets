@@ -36,9 +36,9 @@ Emoticons.prototype.pack = function (resources) {
     var output = {};
 
     for (var i = 0, l = resources.length; i < l; i++) {
-        var pack = this.packs[resources[i].remote_path];
+        var pack = this.packs[resources[i].remotePath];
         if (!pack) {
-            clip.log.warn('Tried to load unknown resource pack `' + resources[i].remote_path + '`!');
+            clip.log.warn('Tried to load unknown resource pack `' + resources[i].remotePath + '`!');
             continue;
         }
 
