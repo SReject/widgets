@@ -9,12 +9,12 @@ describe('emoticons', function () {
 
     beforeEach(function () {
         this.user.getResource = sinon.stub().returns(
-            Bluebird.resolve(emoticons.pack([{ remote_path: 'default' }, { remote_path: 'space' }]))
+            Bluebird.resolve(emoticons.pack([{ remotePath: 'default' }, { remotePath: 'space' }]))
         );
     });
 
     it('packs packs correctly', function () {
-        var out = emoticons.pack([{ remote_path: 'default' }, { remote_path: 'space' }]);
+        var out = emoticons.pack([{ remotePath: 'default' }, { remotePath: 'space' }]);
         expect(Object.keys(out)).to.include.members(
             Object.keys(packs.default.emoticons).concat(Object.keys(packs.space.emoticons))
         );

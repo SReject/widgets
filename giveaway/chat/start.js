@@ -16,8 +16,8 @@ start.hook = function (user, args, callback) {
     // I know order by rand() is evil, but we're doing it on a relatively
     // small dataset, and there's not much of a better way :/
     clip.mysql.query(
-        'SELECT user_name FROM ( ' +
-            'SELECT DISTINCT user_name FROM chat_user ' +
+        'SELECT userName FROM ( ' +
+            'SELECT DISTINCT userName FROM chat_user ' +
             'WHERE online = 1 AND expires > NOW() AND channel = ?' +
         ') as t ORDER BY RAND() LIMIT 1; ', [channel.getId()],
         function (err, result) {
@@ -27,7 +27,7 @@ start.hook = function (user, args, callback) {
 
             // And start the countdown!
             start.countdown(channel, {
-                user: result[0].user_name,
+                user: result[0].userName,
                 endsAt: Date.now() + 1000 * config.countdown
             });
 
