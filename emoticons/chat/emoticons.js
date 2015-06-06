@@ -1,4 +1,4 @@
-var packs = require('beam-emoticons');
+var packs = require('beam-emoticons/_out/manifest.json');
 var Pipe = require('./pipe');
 var clip = require('../../clip');
 var _ = require('lodash');
@@ -10,7 +10,7 @@ function Emoticons () {
     for (var key in packs) {
         this.packs[key] = {};
         for (var emote in packs[key].emoticons) {
-            this.packs[key][emote] = { name: packs[key].emoticons[emote], pack: key };
+            this.packs[key][emote] = { coords: packs[key].emoticons[emote], pack: key };
         }
     }
 }

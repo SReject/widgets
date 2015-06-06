@@ -19,8 +19,10 @@ EmoticonPipe.prototype.run = function (user, message, callback) {
                 if (emoticon) {
                     message[i] = {
                         type: 'emoticon',
-                        text: message[i],
-                        path: emoticon.pack + '/' + emoticon.name
+                        source: 'builtin',
+                        pack: emoticon.pack,
+                        coords: emoticon.coords,
+                        text: message[i]
                     };
                 }
             }
