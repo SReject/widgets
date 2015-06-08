@@ -45,7 +45,7 @@ Emoticons.prototype.loadNetworked = function (resources, user) {
         qs: { user: user.id }
     }).catch(function (err) {
         // catch errors within the request and return as 503s
-        return { statusCode: 503, body: err };
+        return [{ statusCode: 503, body: err }, null];
     }).spread(function (response, results) {
         if (response.statusCode !== 200) {
             clip.log.warn('Errorful response from API when requesting channel emoticons', {

@@ -6,10 +6,11 @@ var sinon = require('sinon');
 describe('emoticons', function () {
     var emoticons = require('../chat/emoticons');
     var request = require('../../util/request');
+    var clip = require('../../clip');
     var data;
 
     beforeEach(function () {
-        sinon.stub(request, 'run').returns(Bluebird.resolve(['', [{"emoticons":{":cat":{"x":0,"y":0},":fish":{"x":16,"y":0}},"url":"http://example.com/foo.png"}]]));
+        sinon.stub(request, 'run').returns(Bluebird.resolve([{ statusCode: 200 }, [{"emoticons":{":cat":{"x":0,"y":0},":fish":{"x":16,"y":0}},"url":"http://example.com/foo.png"}]]));
         this.user.getResource = sinon.stub().returns(
             emoticons.pack([{ remotePath: 'default' }, { remotePath: 'space' }], this.user)
         );
@@ -34,6 +35,24 @@ describe('emoticons', function () {
             expect(out[':cat']).to.deep.equal({ coords: { x: 0, y: 0 }, pack: 'http://example.com/foo.png', source: 'external' });
             expect(out[':fish']).to.deep.equal({ coords: { x: 16, y: 0 }, pack: 'http://example.com/foo.png', source: 'external' });
 
+            done();
+        });
+    });
+
+    it('warns but doesn\'t die if API is ded #1', function (done) {
+        request.run.returns(Bluebird.reject());
+        emoticons.pack([], this.user).then(function (out) {
+            expect(clip.log.warn.called).to.be.true;
+            expect(out).to.deep.equal({});
+            done();
+        });
+    });
+
+    it('warns but doesn\'t die if API is ded #2', function (done) {
+        request.run.returns(Bluebird.resolve([{ statusCode: 503 }, '']));
+        emoticons.pack([], this.user).then(function (out) {
+            expect(clip.log.warn.called).to.be.true;
+            expect(out).to.deep.equal({});
             done();
         });
     });
