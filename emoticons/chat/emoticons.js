@@ -43,7 +43,19 @@ Emoticons.prototype.loadNetworked = function (resources, user) {
         url: clip.config.beam + '/api/v1/channels/' + user.getChannel().id + '/emoticons',
         json: true,
         qs: { user: user.id }
-    }).spread(function (body, results) {
+    }).catch(function (err) {
+        // catch errors within the request and return as 503s
+        return { statusCode: 503, body: err };
+    }).spread(function (response, results) {
+        if (response.statusCode !== 200) {
+            clip.log.warn('Errorful response from API when requesting channel emoticons', {
+                code: response.statusCode,
+                body: response.body
+            });
+
+            return resources;
+        }
+
         for (var i = 0; i < results.length; i++) {
             var pack = results[i];
             for (var key in pack.emoticons) {
