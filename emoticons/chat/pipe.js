@@ -19,7 +19,7 @@ EmoticonPipe.prototype.run = function (user, message, callback) {
                 if (emoticon) {
                     message[i] = {
                         type: 'emoticon',
-                        source: 'builtin',
+                        source: emoticon.source,
                         pack: emoticon.pack,
                         coords: emoticon.coords,
                         text: message[i]

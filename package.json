@@ -34,6 +34,7 @@
     "linkify-it": "^1.0.0",
     "lodash": "^3.5.0",
     "node-uuid": "^1.4.3",
+    "request": "^2.57.0",
     "toposort": "^0.2.10"
   }
 }

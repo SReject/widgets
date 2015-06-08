@@ -7,6 +7,7 @@ var clip = require('../clip');
 beforeEach(function () {
     clip.redis = redis();
     clip.mysql = mysql();
+    clip.config = { beam: 'https://beam.pro' };
     this.channel = channel(this.redis);
     this.user = user(this.channel);
 });

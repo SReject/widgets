@@ -3,4 +3,5 @@
 //  - redis (promisified node-redis client)
 //  - mysql (promisified node-mysql client)
 //  - log   (bunyan logger)
+//  - config
 module.exports = {};
