@@ -39,7 +39,7 @@ describe('emoticons', function () {
         });
     });
 
-    it('warns but doesn\'t die if API is ded #1', function (done) {
+    it('warns but doesn\'t die error is thrown from `request`', function (done) {
         request.run.returns(Bluebird.reject());
         emoticons.pack([], this.user).then(function (out) {
             expect(clip.log.warn.called).to.be.true;
@@ -48,7 +48,7 @@ describe('emoticons', function () {
         });
     });
 
-    it('warns but doesn\'t die if API is ded #2', function (done) {
+    it('warns but doesn\'t die if API returns errorful code', function (done) {
         request.run.returns(Bluebird.resolve([{ statusCode: 503 }, '']));
         emoticons.pack([], this.user).then(function (out) {
             expect(clip.log.warn.called).to.be.true;
