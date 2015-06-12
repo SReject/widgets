@@ -25,7 +25,9 @@ start.validate = function (channel, question, answers, duration) {
 };
 
 /**
- * Sets up the hash in Redis for responses to be stored in.
+ * Sets up the hash in Redis for responses to be stored in, and logs that a poll
+ * started in Graphite.
+ *
  * @param  {Object} redis
  * @param  {Object}   channel
  * @param  {Array}   answers
@@ -40,6 +42,8 @@ start.setupRedis = function (channel, answers, duration, callback) {
     for (var i = 0, l = answers.length; i < l; i++) {
         map[i] = 0;
     }
+
+    clip.graphite.increment("live."+channel.id+".polls.active", 1);
 
     clip.redis.multi()
         .hmset(responseSlug, map)
@@ -68,6 +72,9 @@ start.waitForEnd = function (channel, answers, duration) {
                 responses[answers[i]] = votes;
                 voters += votes;
             }
+
+            // Log that the poll stopped
+            clip.graphite.decrement("live."+channel.id+".polls.active", 1);
 
             // Then emit them across the chat servers.
             channel.publish(
