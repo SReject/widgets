@@ -73,15 +73,16 @@ resources.get = function (name) {
 
         // Set the resource cache based on everything we registered to
         // list, passing data through a handler function if necessary.
-        user._resourceCache = _.mapValues(list, function (record, key) {
+        return Bluebird.props(_.mapValues(list, function (record, key) {
             var data = groupings[record.type];
             if (record.handler) {
-                return record.handler(data);
+                return record.handler(data, user);
             } else {
                 return data;
             }
-        });
-
+        }));
+    }).then(function (results) {
+        user._resourceCache = results;
         return user._resourceCache[name] || [];
     });
 };

@@ -4,4 +4,5 @@
 //  - mysql (promisified node-mysql client)
 //  - graphite (non-promisified statsd client [see MCProHosting/oxide])
 //  - log   (bunyan logger)
+//  - config
 module.exports = {};
