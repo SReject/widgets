@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MCProHosting/beam-widgets.git"
+    "url": "https://github.com/WatchBeam/widgets.git"
   },
   "author": "Connor Peet <connor@peet.io>",
   "license": "Proprietary",
   "bugs": {
-    "url": "https://github.com/MCProHosting/beam-widgets/issues"
+    "url": "https://github.com/WatchBeam/widgets/issues"
   },
-  "homepage": "https://github.com/MCProHosting/beam-widgets",
+  "homepage": "https://github.com/WatchBeam/widgets",
   "devDependencies": {
     "chai": "^2.1.1",
     "gulp": "^3.8.11",
@@ -29,7 +29,7 @@
     "sinon": "^1.13.0"
   },
   "dependencies": {
-    "beam-emoticons": "git+https://github.com/MCProHosting/beam-emoticons.git",
+    "beam-emoticons": "0.0.1",
     "bluebird": "^2.9.14",
     "linkify-it": "^1.0.0",
     "lodash": "^3.5.0",
