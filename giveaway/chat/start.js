@@ -60,7 +60,7 @@ start.countdown = function (channel, data) {
  * @param  {Object} data
  */
 start.results = function (channel, data) {
-    start.message(channel, data.user + ' won the giveaway!');
+    start.message(channel, '@' + data.user + ' won the giveaway!');
 };
 
 /**
