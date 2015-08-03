@@ -1,8 +1,8 @@
 # beam-widgets
 
-[![Build Status](https://travis-ci.org/MCProHosting/beam-widgets.svg)](https://travis-ci.org/MCProHosting/beam-widgets) [![Coverage Status](https://coveralls.io/repos/MCProHosting/beam-widgets/badge.svg?branch=master)](https://coveralls.io/r/MCProHosting/beam-widgets?branch=master) [![](https://badges.gitter.im/MCProHosting/beam.png)](https://gitter.im/MCProHosting/beam-dev)
+[![Build Status](https://travis-ci.org/WatchBeam/widgets.svg)](https://travis-ci.org/WatchBeam/widgets) [![Coverage Status](https://coveralls.io/repos/WatchBeam/widgets/badge.svg?branch=master)](https://coveralls.io/r/WatchBeam/widgets?branch=master) [![](https://badges.gitter.im/MCProHosting/beam.png)](https://gitter.im/MCProHosting/beam-dev)
 
-Widgets allow you to hook into functionality on our chat server and the Beam frontend to do things like add custom commands, custom chat styling, and more. View documentation on our [developers site](https://developer.beam.pro/api/widget).
+Widgets allow you to hook into functionality on our chat server and the Beam frontend to do things like add custom commands, custom chat styling, and more. View documentation on our [developers site](https://developer.beam.pro/api/guides/widgets).
 
 ### License
 
