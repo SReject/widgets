@@ -11,7 +11,7 @@ function Me () {
 /**
  * Turns the message into a single "me" component before passing it on.
  * @param  {User}    user
- * @param  {Array}   data
+ * @param  {Object}   data
  * @param  {Function} cb
  */
 Me.prototype.run = function (user, data, callback) {

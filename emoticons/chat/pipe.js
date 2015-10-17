@@ -7,7 +7,7 @@ function EmoticonPipe(packs, channel) {
 /**
  * Pipe function for emoticons, expects to come after words have been split.
  * Replaces emoticons (like ":)") in the message with proper components.
- * @param  {Array}   message
+ * @param  {Object}   messageObj
  * @param  {Function} callback
  */
 EmoticonPipe.prototype.run = function (user, messageObj, callback) {
