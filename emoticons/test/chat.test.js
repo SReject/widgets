@@ -73,10 +73,11 @@ describe('emoticons', function () {
     it('parses simple', function (done) {
         emoticons.pipe(this.channel).run(this.user, [':)'], function (err, result) {
             expect(err).to.be.undefined;
+            console.log(result);
             expect(result).to.deep.equal([{ type: 'emoticon',
                 source: 'builtin',
                 pack: 'default',
-                coords: { x: 88, y: 0 },
+                coords: { x: 64, y: 0 },
                 text: ':)'
             }]);
             done();
@@ -90,7 +91,7 @@ describe('emoticons', function () {
                 type: 'emoticon',
                 source: 'builtin',
                 pack: 'default',
-                coords: { x: 88, y: 0 },
+                coords: { x: 64, y: 0 },
                 text: ':)'
             }, { foo: 'bar' }, 'asdf', {
                 type: 'emoticon',
