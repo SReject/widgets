@@ -26,7 +26,7 @@ Me.prototype.run = function (user, data, callback) {
 
     if (msg.slice(0, len) === this.prefix) {
         data.meta.me = true;
-        data.message = [msg.slice(len)];
+        data.message[0] = msg.slice(len);
     }
     callback(undefined, data);
 };
