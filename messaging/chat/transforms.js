@@ -5,15 +5,16 @@ transforms.splitWords = function () {
      * Takes a message string and splits it into an array of words and spaces,
      * sending chunks down the pipe as we parse.
      * @param  {User} user
-     * @param  {Array} strs
-     * @return {Array}
+     * @param  {Object} data
+     * @return {Object}
      */
-    return { run: function (user, strs, cb) {
+    return { run: function (user, data, cb) {
         var output = [];
+        var message = data.message;
 
         // Iterate through every chunk in the string...
-        for (var j = 0; j < strs.length; j++) {
-            var str = strs[j];
+        for (var j = 0; j < message.length; j++) {
+            var str = message[j];
 
             // If it's not a string (already been parsed into something,
             // just add it on the output).
@@ -36,7 +37,9 @@ transforms.splitWords = function () {
             output.push(str.slice(k, i));
         }
 
-        cb(null, output);
+        data.message = output;
+
+        cb(null, data);
     }};
 };
 
@@ -44,12 +47,13 @@ transforms.finalize = function () {
     /**
      * Transforms the strings in the list to
      * @param  {User} user
-     * @param  {Array} data
-     * @return {Array}
+     * @param  {Object} data
+     * @return {Object}
      */
     return { run: function (user, data, cb) {
         var spool = [];
         var output = [];
+        var message = data.message;
 
         /**
          * Takes spooled strings and adds a text component to
@@ -63,17 +67,18 @@ transforms.finalize = function () {
         }
 
         // The spool on the strings to the spool or output.
-        for (var i = 0; i < data.length; i++) {
-            if (typeof data[i] === 'string') {
-                spool.push(data[i]);
+        for (var i = 0; i < message.length; i++) {
+            if (typeof message[i] === 'string') {
+                spool.push(message[i]);
             } else {
                 cutSpool();
-                output.push(data[i]);
+                output.push(message[i]);
             }
         }
 
         cutSpool();
-        cb(null, output);
+        data.message = output;
+        cb(null, data);
     }};
 };
 
@@ -81,7 +86,7 @@ transforms.identity = function () {
     /**
      * Identity transform. Does not modify data.
      * @param  {User}   user
-     * @param  {Array}   data
+     * @param  {Object}   data
      * @param  {Function} cb
      */
     return { run: function (user, data, cb) {

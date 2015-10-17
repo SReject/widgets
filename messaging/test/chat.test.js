@@ -15,7 +15,7 @@ describe('messaging chat', function () {
         describe('identity', function () {
             it('works', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal(['lorem ipsum', 'dolor']);
+                    expect(out).to.deep.equal({meta: {}, message: ['lorem ipsum', 'dolor']});
                     done();
                 });
                 stream.push('lorem ipsum');
@@ -28,7 +28,10 @@ describe('messaging chat', function () {
         describe('finalize', function () {
             it('works on single strings', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal([{ type: 'text', data: 'lorem ipsum' }]);
+                    expect(out).to.deep.equal({
+                        meta: {},
+                        message: [{ type: 'text', data: 'lorem ipsum' }]
+                    });
                     done();
                 });
                 stream.push('lorem ipsum');
@@ -38,7 +41,10 @@ describe('messaging chat', function () {
 
             it('works on seperate strings', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal([{ type: 'text', data: 'lorem ipsum dolor' }]);
+                    expect(out).to.deep.equal({
+                        meta: {},
+                        message: [{ type: 'text', data: 'lorem ipsum dolor' }]
+                    });
                     done();
                 });
                 stream.push('lorem ipsum');
@@ -49,11 +55,14 @@ describe('messaging chat', function () {
 
             it('works on mixed data', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal([
-                        { type: 'text', data: 'lorem ipsum' },
-                        { foo: 'bar' },
-                        { type: 'text', data: 'sit dolor' }
-                    ]);
+                    expect(out).to.deep.equal({
+                        meta: {},
+                        message: [
+                            { type: 'text', data: 'lorem ipsum' },
+                            { foo: 'bar' },
+                            { type: 'text', data: 'sit dolor' }
+                        ]
+                    });
                     done();
                 });
                 stream.push('lorem ipsum');
@@ -69,7 +78,7 @@ describe('messaging chat', function () {
 
             it('works on empty', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal([]);
+                    expect(out).to.deep.equal({meta: {}, message: []});
                     done();
                 });
                 stream.pipe(transforms.splitWords());
@@ -78,7 +87,7 @@ describe('messaging chat', function () {
 
             it('works on basic', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal(['lorem', ' ', 'ipsum', ' ', 'dolor']);
+                    expect(out).to.deep.equal({meta: {}, message: ['lorem', ' ', 'ipsum', ' ', 'dolor']});
                     done();
                 });
                 stream.push('lorem ipsum dolor');
@@ -88,7 +97,7 @@ describe('messaging chat', function () {
 
             it('works with trailing spaces', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal(['   ', 'helloo', '   ']);
+                    expect(out).to.deep.equal({meta: {}, message: ['   ', 'helloo', '   ']});
                     done();
                 });
                 stream.push('   helloo   ');
@@ -98,7 +107,7 @@ describe('messaging chat', function () {
 
             it('works with multiple spaces', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal(['   ', 'helloo', '  ', 'world', ' ']);
+                    expect(out).to.deep.equal({meta: {}, message: ['   ', 'helloo', '  ', 'world', ' ']});
                     done();
                 });
                 stream.push('   helloo  world ');
@@ -108,7 +117,7 @@ describe('messaging chat', function () {
 
             it('works with nested and objects', function (done) {
                 stream.on('end', function (out) {
-                    expect(out).to.deep.equal(['a', ' ', 'b', 'c', {}, ' ', 'd', ' ', 'e']);
+                    expect(out).to.deep.equal({meta: {}, message: ['a', ' ', 'b', 'c', {}, ' ', 'd', ' ', 'e']});
                     done();
                 });
                 stream.push('a b');
@@ -126,15 +135,15 @@ describe('messaging chat', function () {
         var stream;
 
         beforeEach(function () {
-            stream = new MessageStream(['lorem', 'ipsum', 'dollarz']);
+            stream = new MessageStream({meta: {}, message: ['lorem', 'ipsum', 'dollarz']});
         });
 
         it('pipes through transforms', function (done) {
             stream.on('end', function (out) {
-                expect(out).to.deep.equal(['dollarz', 'ipsum', 'lorem']);
+                expect(out).to.deep.equal({meta: {}, message: ['dollarz', 'ipsum', 'lorem']});
                 done();
             });
-            stream.pipe({ run: function (user, data, cb) { cb(null, data.reverse()); }}).run();
+            stream.pipe({ run: function (user, data, cb) { cb(null, {meta: {}, message: data.message.reverse()}); }}).run();
         });
 
         it('aborts when an error is thrown', function (done) {
@@ -190,7 +199,7 @@ describe('messaging chat', function () {
         it('parses the message', function () {
             chat.parseMessage(this.channel, this.user, 'hello world', function (err, message) {
                 expect(err).to.not.be.ok;
-                expect(message).to.deep.equal([{ type: 'text', data: 'hello world' }]);
+                expect(message).to.deep.equal({meta: {}, message: [{ type: 'text', data: 'hello world' }]});
             });
         });
         it('sends the message', function () {
@@ -207,7 +216,7 @@ describe('messaging chat', function () {
             var test = this;
             chat.method(this.user, ['hello world'], function (err) {
                 expect(err).not.to.be.ok;
-                expect(chat.sendMessageRaw.calledWith(test.channel, test.user, [{ type: 'text', data: 'hello world' }])).to.be.true;
+                expect(chat.sendMessageRaw.calledWith(test.channel, test.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
                 done();
             });
         });
@@ -215,12 +224,12 @@ describe('messaging chat', function () {
         it('binds to user', function () {
             chat.bindUser(this.user);
             this.user.sendMessage('hello world');
-            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, [{ type: 'text', data: 'hello world' }])).to.be.true;
+            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
         });
         it('binds to channel', function () {
             chat.bindChannel(this.channel);
             this.channel.sendMessage(this.user, 'hello world');
-            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, [{ type: 'text', data: 'hello world' }])).to.be.true;
+            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
         });
     });
 });

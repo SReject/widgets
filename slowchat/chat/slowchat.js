@@ -83,7 +83,7 @@ SlowChat.prototype.canSend = function (user) {
 
 /**
  * Ensures the user can send a message before piping it on.
- * @param  {Array}   data
+ * @param  {Object}   data
  * @param  {Function} cb
  */
 SlowChat.prototype.run = function (user, data, cb) {

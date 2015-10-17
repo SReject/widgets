@@ -15,7 +15,7 @@ function noop () {}
  * @param  {Function} callback
  */
 chat.parseMessage = function (channel, user, message, callback) {
-    var stream = new MessageStream([message], channel.messagePipes);
+    var stream = new MessageStream({message: [message], meta: {}}, channel.messagePipes);
 
     stream.on('aborted', function (err) {
         callback(err);

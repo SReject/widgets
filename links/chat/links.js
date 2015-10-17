@@ -53,7 +53,7 @@ Links.prototype.clickify = function (data, matches) {
  * Parses the message. Clickifies links if necessary, and throws an error
  * if links are not permitted.
  *
- * @param  {Array} data
+ * @param  {Object} data
  * @param  {Boolean} permitted
  * @param  {Boolean} clickable
  * @throws {NotAllowed}
@@ -62,8 +62,9 @@ Links.prototype.clickify = function (data, matches) {
 Links.prototype.parse = function (data, permitted) {
     // Loop through each "word" in the data. See if it matches and, if so,
     // either block or clickify.
-    for (var i = 0; i < data.length; i++) {
-        var part = data[i];
+    var message = data.message;
+    for (var i = 0; i < message.length; i++) {
+        var part = message[i];
 
         // Make sure the data is a string, and only parse if it passes
         // our pretest. Most messages aren't links, so this saves time.
@@ -77,19 +78,20 @@ Links.prototype.parse = function (data, permitted) {
                     throw new NotAllowed();
                 } else if (this.clickable) {
                     var parsed = this.clickify(part, match);
-                    data = data.slice(0, i).concat(parsed).concat(data.slice(i + 1));
+                    message = message.slice(0, i).concat(parsed).concat(message.slice(i + 1));
                     i += parsed.length;
                 }
             }
         }
     }
 
+    data.message = message;
     return data;
 };
 
 /**
  * Ensures the user can send a message before piping it on.
- * @param  {Array}   data
+ * @param  {Object}   data
  * @param  {Function} cb
  */
 Links.prototype.run = function (user, data, callback) {
