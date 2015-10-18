@@ -11,7 +11,7 @@ describe('giveaway starting', function () {
             username: 'GiveawayBot',
             id: -1,
             roles: ['Admin']
-        }, '@connor4312 won the giveaway!')).to.be.true;
+        }, {meta: {}, message: '@connor4312 won the giveaway!'})).to.be.true;
     });
 
     it('sends results at end of countdown', function () {
