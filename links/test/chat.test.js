@@ -7,9 +7,9 @@ describe('links', function () {
 
     beforeEach(function () {
         data = {
-            nolink: ['Lorem ipsum dolor sit amet, consectetur adipisicing elit.'],
-            onelink: ['Lorem ipsum dolor sit amet, github.com adipisicing elit.'],
-            twolink: ['Lorem ipsum dolor sit amet, github.com adipisicing: https://beam.pro']
+            nolink: {meta: {}, message: ['Lorem ipsum dolor sit amet, consectetur adipisicing elit.']},
+            onelink: {meta: {}, message: ['Lorem ipsum dolor sit amet, github.com adipisicing elit.']},
+            twolink: {meta: {}, message: ['Lorem ipsum dolor sit amet, github.com adipisicing: https://beam.pro']}
         };
         links = Links.pipe(this.channel);
     });
@@ -70,7 +70,7 @@ describe('links', function () {
             var links = Links.pipe(this.channel);
             links.run(this.user, data.onelink, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal(['Lorem ipsum dolor sit amet, github.com adipisicing elit.']);
+                expect(out).to.deep.equal({meta: {}, message: ['Lorem ipsum dolor sit amet, github.com adipisicing elit.']});
                 done();
             });
         });
@@ -78,11 +78,14 @@ describe('links', function () {
             var links = Links.pipe(this.channel);
             links.run(this.user, data.onelink, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal([
-                    'Lorem ipsum dolor sit amet, ',
-                    { type: 'link', url: 'http://github.com', text: 'github.com' },
-                    ' adipisicing elit.'
-                ]);
+                expect(out).to.deep.equal({
+                    meta: {},
+                    message: [
+                        'Lorem ipsum dolor sit amet, ',
+                        { type: 'link', url: 'http://github.com', text: 'github.com' },
+                        ' adipisicing elit.'
+                    ]
+                });
                 done();
             });
         });
@@ -91,54 +94,63 @@ describe('links', function () {
     describe('parsing', function () {
         it('parses empty', function (done) {
             var links = Links.pipe(this.channel);
-            links.run(this.user, [], function (err, out) {
+            links.run(this.user, {meta: {}, message: []}, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal([]);
+                expect(out).to.deep.equal({meta: {}, message: []});
                 done();
             });
         });
         it('parses with objects', function (done) {
             var links = Links.pipe(this.channel);
-            links.run(this.user, ['hello', { foo: 2 }, 'world'], function (err, out) {
+            links.run(this.user, {meta: {}, message: ['hello', { foo: 2 }, 'world']}, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal(['hello', { foo: 2 }, 'world']);
+                expect(out).to.deep.equal({ meta: {}, message: ['hello', { foo: 2 }, 'world']});
                 done();
             });
         });
         it('parses mid text', function (done) {
             var links = Links.pipe(this.channel);
-            links.run(this.user, ['a github.com b'], function (err, out) {
+            links.run(this.user, {meta: {}, message: ['a github.com b']}, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal([
-                    'a ',
-                    { type: 'link', url: 'http://github.com', text: 'github.com' },
-                    ' b'
-                ]);
+                expect(out).to.deep.equal({
+                    meta: {},
+                    message: [
+                        'a ',
+                        { type: 'link', url: 'http://github.com', text: 'github.com' },
+                        ' b'
+                    ]
+                });
                 done();
             });
         });
         it('parses end of text, multiple', function (done) {
-            links.run(this.user, ['a github.com b google.com'], function (err, out) {
+            links.run(this.user, {meta: {}, message: ['a github.com b google.com']}, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal([
-                    'a ',
-                    { type: 'link', url: 'http://github.com', text: 'github.com' },
-                    ' b ',
-                    { type: 'link', url: 'http://google.com', text: 'google.com' },
-                ]);
+                expect(out).to.deep.equal({
+                    meta: {},
+                    message: [
+                        'a ',
+                        { type: 'link', url: 'http://github.com', text: 'github.com' },
+                        ' b ',
+                        { type: 'link', url: 'http://google.com', text: 'google.com' },
+                    ]
+                });
                 done();
             });
         });
         it('parses multiple segments', function (done) {
-            links.run(this.user, ['a github.com', { foo: 2 }, ' b google.com'], function (err, out) {
+            links.run(this.user, {meta: {}, message: ['a github.com', { foo: 2 }, ' b google.com']}, function (err, out) {
                 expect(err).to.be.undefined;
-                expect(out).to.deep.equal([
-                    'a ',
-                    { type: 'link', url: 'http://github.com', text: 'github.com' },
-                    { foo: 2 },
-                    ' b ',
-                    { type: 'link', url: 'http://google.com', text: 'google.com' },
-                ]);
+                expect(out).to.deep.equal({
+                    meta: {},
+                    message: [
+                        'a ',
+                        { type: 'link', url: 'http://github.com', text: 'github.com' },
+                        { foo: 2 },
+                        ' b ',
+                        { type: 'link', url: 'http://google.com', text: 'google.com' },
+                    ]
+                });
                 done();
             });
         });

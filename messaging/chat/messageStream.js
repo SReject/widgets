@@ -5,12 +5,12 @@ var _ = require('lodash');
 /**
  * Readable-stream-like implementation that streams strings instead of
  * buffers, since buffer manipulation is currently terribly slow.
- * @param {String[]} data
+ * @param {Object} data
  * @param {Function[]} pipes
  */
 function MessageStream (data, pipes) {
     events.EventEmitter.call(this);
-    this.data = data || [];
+    this.data = data || {meta: {}, message: []};
     this.transforms = pipes || [];
     this.aborted = false;
     this.user = null;
@@ -39,7 +39,7 @@ MessageStream.prototype.setUser = function (user) {
 
 /**
  * Returns the data array.
- * @return {Array}
+ * @return {Object}
  */
 MessageStream.prototype.getData = function () {
     return this.data;
@@ -51,7 +51,7 @@ MessageStream.prototype.getData = function () {
  * @return {MessageStream}
  */
 MessageStream.prototype.push = function (data) {
-    this.data.push(data);
+    this.data.message.push(data);
     return this;
 };
 
@@ -74,13 +74,14 @@ MessageStream.prototype.run = function (idx) {
     // If we reached the end of the pipes, we're done! Trim off empty
     // strings or nullish values that may have arisen.
     if (transform >= this.transforms.length) {
-        return this.emit('end', _.filter(this.data));
+        this.data.message = _.filter(this.data.message);
+        return this.emit('end', this.data);
     }
 
 
     // Keep the number of callbacks to go until we're done with the
     // current pipe. After the end, we'll "start" on the next level.
-    var waiting = this.data.length;
+    var waiting = this.data.message.length;
     if (waiting === 0) {
         return this.run(transform + 1);
     }

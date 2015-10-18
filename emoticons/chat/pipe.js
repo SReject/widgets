@@ -7,12 +7,13 @@ function EmoticonPipe(packs, channel) {
 /**
  * Pipe function for emoticons, expects to come after words have been split.
  * Replaces emoticons (like ":)") in the message with proper components.
- * @param  {Array}   message
+ * @param  {Object}   messageObj
  * @param  {Function} callback
  */
-EmoticonPipe.prototype.run = function (user, message, callback) {
+EmoticonPipe.prototype.run = function (user, messageObj, callback) {
     user.getResource('emoticonPack').then(function (pack) {
 
+        var message = messageObj.message;
         for (var i = 0, l = message.length; i < l; i++) {
             if (typeof message[i] === 'string') {
                 var emoticon = pack[message[i]];
@@ -28,7 +29,8 @@ EmoticonPipe.prototype.run = function (user, message, callback) {
             }
         }
 
-        callback(undefined, message);
+        messageObj.message = message;
+        callback(undefined, messageObj);
     });
 };
 

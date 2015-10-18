@@ -15,7 +15,7 @@ function noop () {}
  * @param  {Function} callback
  */
 chat.parseMessage = function (channel, user, message, callback) {
-    var stream = new MessageStream([message], channel.messagePipes);
+    var stream = new MessageStream({message: [message], meta: {}}, channel.messagePipes);
 
     stream.on('aborted', function (err) {
         callback(err);
@@ -50,7 +50,7 @@ chat.sendMessage = function (channel, user, message, callback) {
 /**
  * Sends a chat message out to the channel.
  * @param  {Objec} user
- * @param  {Array} msg
+ * @param  {Object} msg
  */
 chat.sendMessageRaw = function (channel, user, msg) {
     var message = {

@@ -58,47 +58,56 @@ describe('emoticons', function () {
     });
 
     it('parses external', function (done) {
-        emoticons.pipe(this.channel).run(this.user, [':cat'], function (err, result) {
+        emoticons.pipe(this.channel).run(this.user, {meta: {}, message: [':cat']}, function (err, result) {
             expect(err).to.be.undefined;
-            expect(result).to.deep.equal([{ type: 'emoticon',
-                source: 'external',
-                pack: 'http://example.com/foo.png',
-                coords: { x: 0, y: 0 },
-                text: ':cat'
-            }]);
+            expect(result).to.deep.equal({
+                meta: {},
+                message: [{ type: 'emoticon',
+                    source: 'external',
+                    pack: 'http://example.com/foo.png',
+                    coords: { x: 0, y: 0 },
+                    text: ':cat'
+                }]
+            });
             done();
         });
     });
 
     it('parses simple', function (done) {
-        emoticons.pipe(this.channel).run(this.user, [':)'], function (err, result) {
+        emoticons.pipe(this.channel).run(this.user, {meta: {}, message: [':)']}, function (err, result) {
             expect(err).to.be.undefined;
-            expect(result).to.deep.equal([{ type: 'emoticon',
-                source: 'builtin',
-                pack: 'default',
-                coords: { x: 88, y: 0 },
-                text: ':)'
-            }]);
+            expect(result).to.deep.equal({
+                meta: {},
+                message: [{ type: 'emoticon',
+                    source: 'builtin',
+                    pack: 'default',
+                    coords: { x: 88, y: 0 },
+                    text: ':)'
+                }]
+            });
             done();
         });
     });
 
     it('does not trip over objects', function (done) {
-        emoticons.pipe(this.channel).run(this.user, [':)', { foo: 'bar' }, 'asdf', ':astronaut'], function (err, result) {
+        emoticons.pipe(this.channel).run(this.user, {meta: {}, message: [':)', { foo: 'bar' }, 'asdf', ':astronaut']}, function (err, result) {
             expect(err).to.be.undefined;
-            expect(result).to.deep.equal([{
-                type: 'emoticon',
-                source: 'builtin',
-                pack: 'default',
-                coords: { x: 88, y: 0 },
-                text: ':)'
-            }, { foo: 'bar' }, 'asdf', {
-                type: 'emoticon',
-                source: 'builtin',
-                pack: 'space',
-                coords: { x: 0, y: 0 },
-                text: ':astronaut'
-            }]);
+            expect(result).to.deep.equal({
+                meta: {},
+                message: [{
+                    type: 'emoticon',
+                    source: 'builtin',
+                    pack: 'default',
+                    coords: { x: 88, y: 0 },
+                    text: ':)'
+                }, { foo: 'bar' }, 'asdf', {
+                    type: 'emoticon',
+                    source: 'builtin',
+                    pack: 'space',
+                    coords: { x: 0, y: 0 },
+                    text: ':astronaut'
+                }]
+            });
             done();
         });
     });
