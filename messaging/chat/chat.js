@@ -50,7 +50,7 @@ chat.sendMessage = function (channel, user, message, callback) {
 /**
  * Sends a chat message out to the channel.
  * @param  {Objec} user
- * @param  {Array} msg
+ * @param  {Object} msg
  */
 chat.sendMessageRaw = function (channel, user, msg) {
     var message = {

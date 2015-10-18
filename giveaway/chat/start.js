@@ -73,6 +73,6 @@ start.message = function (channel, body) {
         username: 'GiveawayBot',
         id: -1,
         roles: ['Admin']
-    }, body);
+    }, {meta: {}, message: body});
 };
 
