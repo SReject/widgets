@@ -17,7 +17,10 @@ EmoticonPipe.prototype.run = function (user, messageObj, callback) {
         for (var i = 0, l = message.length; i < l; i++) {
             if (typeof message[i] === 'string') {
                 var emoticon = pack[message[i]];
-                if (emoticon) {
+                if (emoticon &&
+                    emoticon.source &&
+                    emoticon.pack &&
+                    emoticon.coords) {
                     message[i] = {
                         type: 'emoticon',
                         source: emoticon.source,
