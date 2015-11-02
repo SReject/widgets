@@ -59,8 +59,7 @@ chat.sendMessageRaw = function (channel, user, msg) {
         user_name: user.username,
         user_id: user.id,
         user_roles: user.roles,
-        message: msg.message,
-        meta: msg.meta
+        message: msg
     };
 
     channel.publish('ChatMessage', message);
