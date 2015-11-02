@@ -111,4 +111,15 @@ describe('emoticons', function () {
             done();
         });
     });
+
+    it('does not try to turn the word "constructor" into an emoticon', function (done) {
+        emoticons.pipe(this.channel).run(this.user, {meta: {}, message: ['hello constructor test']}, function (err, result) {
+            expect(err).to.be.undefined;
+            expect(result).to.deep.equal({
+                meta: {},
+                message: ['hello constructor test']
+            });
+            done();
+        });
+    });
 });
