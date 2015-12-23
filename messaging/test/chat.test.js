@@ -202,6 +202,7 @@ describe('messaging chat', function () {
                 expect(message).to.deep.equal({meta: {}, message: [{ type: 'text', data: 'hello world' }]});
             });
         });
+
         it('sends the message', function () {
         });
 
@@ -223,8 +224,14 @@ describe('messaging chat', function () {
 
         it('binds to user', function () {
             chat.bindUser(this.user);
+
             this.user.sendMessage('hello world');
             expect(chat.sendMessageRaw.calledWith(this.channel, this.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
+
+            this.user.parseMessageAs('hello world', function (err, message) {
+                expect(err).to.not.be.ok;
+                expect(message).to.deep.equal({meta: {}, message: [{ type: 'text', data: 'hello world' }]});
+            });
         });
         it('binds to channel', function () {
             chat.bindChannel(this.channel);

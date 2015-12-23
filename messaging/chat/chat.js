@@ -21,7 +21,7 @@ chat.parseMessage = function (channel, user, message, callback) {
         callback(err);
     });
     stream.on('end', function (message) {
-        callback(null, message);
+        callback(null, chat.tagMessage(channel, user, message));
     });
 
     stream.setUser(user).run();
@@ -48,21 +48,33 @@ chat.sendMessage = function (channel, user, message, callback) {
 };
 
 /**
+ * Adds default properties to a message object to fill it out for sending.
+ * @param  {Object} channel
+ * @param  {Object} user
+ * @param  {Object} message
+ * @return {Object}
+ */
+chat.tagMessage = function (channel, user, message) {
+    if (message.id) {
+        return message;
+    }
+
+    return _.extend(message, {
+        channel: channel.id,
+        id: uuid.v1(),
+        user_name: user.username,
+        user_id: user.id,
+        user_roles: user.roles
+    });
+};
+
+/**
  * Sends a chat message out to the channel.
  * @param  {Objec} user
  * @param  {Object} msg
  */
 chat.sendMessageRaw = function (channel, user, msg) {
-    var message = {
-        channel: channel.id,
-        id: uuid.v1(),
-        user_name: user.username,
-        user_id: user.id,
-        user_roles: user.roles,
-        message: msg.message,
-        meta: msg.meta
-    };
-
+    var message = chat.tagMessage(channel, user, msg);
     channel.publish('ChatMessage', message);
 
     // Log the chat message into graphite
@@ -99,6 +111,7 @@ chat.method = function (user, args, callback) {
  * @param  {Object} user
  */
 chat.bindUser = function (user) {
+    user.parseMessageAs = _.bind(chat.parseMessage, null, user.getChannel(), user);
     user.sendMessage = _.bind(chat.sendMessage, null, user.getChannel(), user);
 };
 /**
