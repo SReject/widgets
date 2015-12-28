@@ -6,7 +6,7 @@ var clip = require('../../clip');
  * @param  {Array}   args
  * @param  {Function} callback
  */
-chat.method = function (user, args, callback) {
+exports.method = function (user, args, callback) {
     if (typeof args[0] !== 'string') {
         return callback('You must say who you\'re writing to!');
     }
@@ -16,9 +16,12 @@ chat.method = function (user, args, callback) {
     }
 
     user.parseMessageAs(args[1], function (err, message) {
-        if (err) return callback(err);
+        if (err) {
+            return callback(err);
+        }
 
         message.target = args[0];
+        message.message.meta.whisper = true;
         user.getChannel().publish('WhisperMessage', message);
     });
 };
@@ -27,8 +30,8 @@ chat.method = function (user, args, callback) {
  * Sets up listeners on the channel for incoming whisper messages.
  * @param {Channel} channel
  */
-chat.bindChannel = function (channel) {
-    channel.on('WhisperMessage', function (message) {
+exports.bindChannel = function (channel) {
+    channel.on('WhisperMessage', function (channel, message) {
         channel.forUser(function (user) {
             if (user.getUsername().toLowerCase() === message.target.toLowerCase()) {
                 user.socket.sendEvent('WhisperMessage', message);

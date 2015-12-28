@@ -7,7 +7,7 @@ module.exports = {
     authors: ['connor4312'],
     // Hooks for Beam chat servers/frontend.
     hooks: {
-        whisper: require('./whisper')
+        chat: require('./chat')
     },
     // Description to display to users.
     description: 'Allows direct user-to-user messaging in channel chats.',

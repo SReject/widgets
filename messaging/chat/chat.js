@@ -59,13 +59,14 @@ chat.tagMessage = function (channel, user, message) {
         return message;
     }
 
-    return _.extend(message, {
-        channel: channel.id,
+    return {
+        channel: channel.getId(),
         id: uuid.v1(),
-        user_name: user.username,
-        user_id: user.id,
-        user_roles: user.roles
-    });
+        user_name: user.getUsername(),
+        user_id: user.getId(),
+        user_roles: user.getRoles(),
+        message: message
+    };
 };
 
 /**
