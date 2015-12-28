@@ -6,6 +6,8 @@ var user = require('./fixture/user');
 var log = require('./fixture/log');
 var clip = require('../clip');
 
+require('chai').use(require('chai-subset'));
+
 beforeEach(function () {
     clip.redis = redis();
     clip.mysql = mysql();

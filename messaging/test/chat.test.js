@@ -199,9 +199,10 @@ describe('messaging chat', function () {
         it('parses the message', function () {
             chat.parseMessage(this.channel, this.user, 'hello world', function (err, message) {
                 expect(err).to.not.be.ok;
-                expect(message).to.deep.equal({meta: {}, message: [{ type: 'text', data: 'hello world' }]});
+                expect(message.message).to.deep.equal({meta: {}, message: [{ type: 'text', data: 'hello world' }]});
             });
         });
+
         it('sends the message', function () {
         });
 
@@ -216,20 +217,48 @@ describe('messaging chat', function () {
             var test = this;
             chat.method(this.user, ['hello world'], function (err) {
                 expect(err).not.to.be.ok;
-                expect(chat.sendMessageRaw.calledWith(test.channel, test.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
+                expect(chat.sendMessageRaw.args[0][0]).to.equal(test.channel);
+                expect(chat.sendMessageRaw.args[0][1]).to.equal(test.user);
+                expect(chat.sendMessageRaw.args[0][2]).to.containSubset({
+                    user_name: 'connor4312',
+                    user_id: 42,
+                    user_roles: [ 'Developer', 'User' ],
+                    channel: 1337,
+                    message: {
+                        meta: {},
+                        message: [{ type: 'text', data: 'hello world' }]
+                    }
+                });
                 done();
             });
         });
 
         it('binds to user', function () {
             chat.bindUser(this.user);
+
             this.user.sendMessage('hello world');
-            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
+            expect(chat.sendMessageRaw.args[0][0]).to.equal(this.channel);
+            expect(chat.sendMessageRaw.args[0][1]).to.equal(this.user);
+
+            this.user.parseMessageAs('hello world', function (err, message) {
+                expect(err).to.not.be.ok;
+                expect(message).to.containSubset({
+                    user_name: 'connor4312',
+                    user_id: 42,
+                    user_roles: [ 'Developer', 'User' ],
+                    channel: 1337,
+                    message: {
+                        meta: {},
+                        message: [{ type: 'text', data: 'hello world' }]
+                    }
+                });
+            });
         });
         it('binds to channel', function () {
             chat.bindChannel(this.channel);
             this.channel.sendMessage(this.user, 'hello world');
-            expect(chat.sendMessageRaw.calledWith(this.channel, this.user, {meta: {}, message: [{ type: 'text', data: 'hello world' }]})).to.be.true;
+            expect(chat.sendMessageRaw.args[0][0]).to.equal(this.channel);
+            expect(chat.sendMessageRaw.args[0][1]).to.equal(this.user);
         });
     });
 });
