@@ -34,7 +34,7 @@ exports.bindChannel = function (channel) {
     channel.on('WhisperMessage', function (channel, message) {
         channel.forUser(function (user) {
             if (user.getUsername().toLowerCase() === message.target.toLowerCase()) {
-                user.socket.sendEvent('WhisperMessage', message);
+                user.socket.sendEvent('ChatMessage', message);
             }
         });
     });
