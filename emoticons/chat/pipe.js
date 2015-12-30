@@ -16,8 +16,9 @@ EmoticonPipe.prototype.run = function (user, messageObj, callback) {
         var message = messageObj.message;
         for (var i = 0, l = message.length; i < l; i++) {
             if (typeof message[i] === 'string') {
-                var emoticon = pack[message[i]];
-                if (emoticon) {
+                var isEmoticon = pack.hasOwnProperty(message[i]);
+                if (isEmoticon) {
+                    var emoticon = pack[message[i]];
                     message[i] = {
                         type: 'emoticon',
                         source: emoticon.source,
