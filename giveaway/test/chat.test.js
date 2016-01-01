@@ -7,11 +7,12 @@ describe('giveaway starting', function () {
 
     it('sends the completion message', function () {
         start.results(this.channel, { user: 'connor4312' });
-        expect(this.channel.sendMessageRaw.calledWith({
-            username: 'GiveawayBot',
-            id: -1,
-            roles: ['Admin']
-        }, {meta: {}, message: '@connor4312 won the giveaway!'})).to.be.true;
+
+        var args = this.channel.sendMessageRaw.args[0];
+        expect(args[0].getUsername()).to.equal('GiveawayBot');
+        expect(args[0].getId()).to.equal(-1);
+        expect(args[0].getRoles()).to.deep.equal(['Admin']);
+        expect(args[1]).to.deep.equal({ meta: {}, message: '@connor4312 won the giveaway!' });
     });
 
     it('sends results at end of countdown', function () {
