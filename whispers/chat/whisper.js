@@ -7,22 +7,33 @@ var clip = require('../../clip');
  * @param  {Function} callback
  */
 exports.method = function (user, args, callback) {
-    if (typeof args[0] !== 'string') {
+    var whisperTo      = args[0];
+    var whisperMessage = args[1]
+
+    if (typeof whisperTo !== 'string') {
         return callback('You must say who you\'re writing to!');
     }
 
-    if (typeof args[1] !== 'string') {
+    if (typeof whisperMessage !== 'string') {
         return callback('You must write a message!');
     }
 
-    user.parseMessageAs(args[1], function (err, message) {
-        if (err) {
-            return callback(err);
-        }
+    // Check if the user is actually in chat
+    clip.mysql.queryAsync('SELECT `online` FROM `chat_user` WHERE `username` = ? AND channel = ? AND online=1;',
+    [whisperTo, user.getChannel().id]).then(function (results) {
+        if (results[0].length !== 0) {
+            user.parseMessageAs(whisperMessage, function (err, message) {
+                if (err) {
+                    return callback(err);
+                }
 
-        message.target = args[0];
-        message.message.meta.whisper = true;
-        user.getChannel().publish('WhisperMessage', message);
+                message.target = whisperTo;
+                message.message.meta.whisper = true;
+                user.getChannel().publish('WhisperMessage', message);
+            });
+        } else {
+            return callback(whisperTo + " isn't in this chat!");
+        }
     });
 };
 
