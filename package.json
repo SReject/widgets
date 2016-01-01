@@ -21,6 +21,7 @@
     "chai": "^2.1.1",
     "chai-subset": "^1.2.0",
     "gulp": "^3.8.11",
+    "gulp-eslint": "^1.1.1",
     "gulp-istanbul": "^0.6.0",
     "gulp-load-plugins": "^0.9.0",
     "gulp-mocha": "^2.0.0",
@@ -30,7 +31,6 @@
   "dependencies": {
     "beam-emoticons": "^0.0.9",
     "bluebird": "^2.9.14",
-    "gulp-eslint": "^1.1.1",
     "linkify-it": "^1.0.0",
     "lodash": "^3.5.0",
     "node-uuid": "^1.4.3",
