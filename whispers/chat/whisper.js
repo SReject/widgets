@@ -33,6 +33,10 @@ exports.method = function (user, args, callback) {
 exports.bindChannel = function (channel) {
     channel.on('WhisperMessage', function (channel, message) {
         channel.forUser(function (user) {
+            if (user.isAnonymous()) {
+                return;
+            }
+
             if (user.getUsername().toLowerCase() === message.target.toLowerCase()) {
                 user.socket.sendEvent('ChatMessage', message);
             }
