@@ -12,9 +12,10 @@ gulp.task('lint', function () {
     var src = sources('/**/*.js').concat(['!**/*.test.js']);
 
     gulp.src(src)
-        .pipe($.jshint())
-        .pipe($.jshint.reporter('jshint-stylish'))
-        .pipe($.jscs());
+        .pipe($.eslint())
+        .pipe($.eslint.format())
+        // todo(connor4312): update widgets to new code standards
+        //.pipe($.eslint.failAfterError());
 });
 
 /**

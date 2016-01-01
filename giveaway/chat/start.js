@@ -70,9 +70,9 @@ start.results = function (channel, data) {
  */
 start.message = function (channel, body) {
     channel.sendMessageRaw({
-        username: 'GiveawayBot',
-        id: -1,
-        roles: ['Admin']
-    }, {meta: {}, message: body});
+        getUsername: () => 'GiveawayBot',
+        getId: () => -1,
+        getRoles: () => ['Admin']
+    }, { meta: {}, message: body });
 };
 
