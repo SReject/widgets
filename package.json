@@ -1,6 +1,6 @@
 {
   "name": "beam-widgets",
-  "version": "0.0.10",
+  "version": "1.0.0",
   "description": "Widget components of channels and chat.",
   "main": "index.js",
   "scripts": {
