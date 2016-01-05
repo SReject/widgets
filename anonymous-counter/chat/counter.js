@@ -8,6 +8,7 @@ var counter = module.exports = {};
 var WORKERS_SET = 'chat:workers';
 var HASH_PREFIX = 'chat:anoncount:';
 var HASH_EXPIRY = 5 * 60;
+var REFRESH_TIMEOUT = 60;
 
 // Generate a random ID for this process' chat hash.
 var uniqId = random.alphanum(16);
@@ -103,7 +104,7 @@ function initWorker () {
                 clip.log.error('Failed to set expiry on worker hash',
                     { hash: getHashName(), error: err });
             });
-        }, HASH_EXPIRY * 1000);
+        }, REFRESH_TIMEOUT * 1000);
     });
 }
 
@@ -112,5 +113,5 @@ function initWorker () {
  * @param  {Error} err
  */
 function handleError (err) {
-    clip.log.error('Failed to edit the anonimous count.', err);
+    clip.log.error('Failed to edit the anonymous count.', err);
 }
