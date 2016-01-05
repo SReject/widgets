@@ -78,7 +78,7 @@ InASpaceSuitPipe.prototype.findUserId = function (username) {
 
         for (var i = 0; i < results.length; i++) {
             var user = results[i];
-            if (user.username === username) {
+            if (user.username.toLowerCase() === username.toLowerCase()) {
                 return user.id;
             }
         }

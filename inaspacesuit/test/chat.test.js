@@ -39,6 +39,15 @@ describe('inaspacesuit', function () {
         .catch(done);
     });
 
+    it('ignores username capitalization', function (done) {
+        inaspacesuit.pipe().findUserId('ZelDaRick')
+        .then(function (userId) {
+            expect(userId).to.equal(1);
+            done();
+        })
+        .catch(done);
+    });
+
     it('parses spacesuits', function (done) {
         inaspacesuit.pipe().run(this.user, {meta: {}, message: [':zeldarickinaspacesuit']}, function (err, result) {
             expect(err).to.be.undefined;
