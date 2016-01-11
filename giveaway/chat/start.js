@@ -73,6 +73,6 @@ start.message = function (channel, body) {
         getUsername: () => 'GiveawayBot',
         getId: () => -1,
         getRoles: () => ['Admin']
-    }, { meta: {avatar: "/_latest/img/beam-ball-small.png?build=19fe9a2"}, message: body });
+    }, { meta: {avatar: "/_latest/img/beam-ball-small.png"}, message: body });
 };
 
