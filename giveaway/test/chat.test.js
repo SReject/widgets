@@ -12,7 +12,7 @@ describe('giveaway starting', function () {
         expect(args[0].getUsername()).to.equal('GiveawayBot');
         expect(args[0].getId()).to.equal(-1);
         expect(args[0].getRoles()).to.deep.equal(['Admin']);
-        expect(args[1]).to.deep.equal({ meta: {}, message: '@connor4312 won the giveaway!' });
+        expect(args[1]).to.deep.equal({ meta: {avatar: "/_latest/img/beam-ball-small.png"}, message: '@connor4312 won the giveaway!' });
     });
 
     it('sends results at end of countdown', function () {
