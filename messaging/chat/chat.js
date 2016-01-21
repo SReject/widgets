@@ -37,6 +37,10 @@ chat.parseMessage = function (channel, user, message, callback) {
 chat.sendMessage = function (channel, user, message, callback) {
     callback = callback || noop;
 
+    if (!message) {
+        callback('You must type a message!');
+    }
+
     chat.parseMessage(channel, user, message, function (err, message) {
         if (err) {
             callback(err);
