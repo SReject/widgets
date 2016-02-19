@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 class ChannelHistory extends Array {
     constructor(maxLength) {
         super();
