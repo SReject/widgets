@@ -25,10 +25,11 @@ del.remove = function (channelId, messageId, deleterRoles, deleterId) {
     const delRole = clip.roles.getDominant(deleterRoles);
     const msgRole = clip.roles.getDominant(msg.user_roles);
     
-    
-    if (deleterId !== msg.user_id && !clip.roles.canAdministrate(delRole, msgRole)) {
+    const deletingOwnMessage = msg.user_id === deleterId && delRole > clip.roles.getLevel('User');
+    if (!clip.roles.canAdministrate(delRole, msgRole) && !deletingOwnMessage) {
         throw new Error('Access denied.');
     }
+    
     return clip.manager.getChannel(channelId)
     .then(ch => ch.publish('DeleteMessage', { id: messageId }));
 };
