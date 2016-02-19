@@ -1,19 +1,23 @@
 'use strict';
-const clip = require('../../clip');
-const LifeRaft = require('liferaft');
-const MsgBuffer = require('./msgBuffer');
 
-let instance = null;
+const MsgBuffer = require('./msgBuffer');
+const LifeRaft = require('liferaft');
+const clip = require('../../clip');
+const _ = require('lodash');
+
+let instance = new History();
 
 /**
- * 
+ * History class that contains all channel histories.
  */
 function History () {
     this.cache = {};
 }
 
 
-
+/**
+ * Store a message in the channel history.
+ */
 History.prototype.store = function (channelId, data) {
     if (!this.cache.hasOwnProperty(`c${channelId}`)) {
         this.cache[`c${channelId}`] = new MsgBuffer(clip.config.messages.cache);
@@ -24,6 +28,9 @@ History.prototype.store = function (channelId, data) {
     historyCache.push(data);
 };
 
+/**
+ * Return the ChannelHistory array for the specified channel.
+ */
 History.prototype.getChannelHistory = function (channelId) {
     if (this.cache.hasOwnProperty(`c${channelId}`)) {
         return this.cache[`c${channelId}`];
@@ -33,38 +40,28 @@ History.prototype.getChannelHistory = function (channelId) {
 };
 
 /**
- * 
+ * Binds to the channel when it's created in the chat server.
  * @param  {User}    user
  * @param  {Object}   data
  * @param  {Function} cb
  */
 History.bindChannel = function (channel) {
-    if (!instance) instance = new History();
-    
     channel.on('ChatMessage', function (ch, msg) {
         instance.store(channel.id, msg);
     });
 };
 
-History.bindUser = function (user) {
-    if (!instance) instance = new History();
+/** 
+ * Handler for the `history` method to get the chat history.
+ * @param {Number} args.count Amount of messages to send down.
+ */
+History.method = function (socket, args, respond) {
+    const count = parseInt(args[0], 10) || 0;
     
-    const historyCache = instance.getChannelHistory(user.getChannel().id);
-    if (user.params.history) {
-        const count = Math.min(
-            clip.config.get('messages.cache') || 50, 
-            parseInt(user.params.history, 10) || 0,
-            historyCache.length || 0
-        );
-        // TODO(JamyDev): Export this to a function or use a lodash one?
-        const begin = historyCache.length - count;
-        const slice = historyCache.slice(begin, historyCache.length);
-
-        for (let i = 0; i < slice.length; ++i) {
-            user.socket.sendEvent('ChatMessage', slice[i]);
-        }
-        
-    }
+    const historyCache = instance.getChannelHistory(socket.user.getChannel().id);
+    const slice = _.takeRight(historyCache, Math.min(clip.config.get('messages.cache'), count));
+    
+    respond(null, slice);
 };
 
 module.exports = History;
