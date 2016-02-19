@@ -53,12 +53,10 @@ history.getChannelHistory = function (channelId) {
  */
 history.bindChannel = function (channel) {
     channel.on('ChatMessage', function (ch, msg) {
-        console.log(msg)
         history.store(channel.id, msg);
     });
     
     channel.on('DeleteMessage', (ch, msgId) => {
-        console.log("DELETE", msgId)
         history.delete(channel.id, msgId);
     });
 };
