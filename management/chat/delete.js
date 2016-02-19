@@ -29,8 +29,7 @@ del.remove = function (channelId, messageId, deleterRoles, deleterId) {
     const msgRole = clip.roles.getDominant(msg.user_roles);
     
     const deletingOwnMessage = msg.user_id === deleterId && delRole.level > clip.roles.getLevel('User');
-    
-    if (!clip.roles.canAdministrate(delRole, msgRole) && !deletingOwnMessage) {
+    if (!clip.roles.canAdministrate(delRole.level, msgRole.level) && !deletingOwnMessage) {
         throw new Error('Access denied.');
     }
     
