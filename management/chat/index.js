@@ -5,7 +5,6 @@ const redis = require('redis');
 module.exports = function (hook) {
     hook.method('permission', 'deleteMessage', ['remove_message', require('./delete')]);
     hook.on('booted', () => {
-        console.log("HURR")
         const clip = require('../../clip');
         const client = redis.createClient(clip.config.get('redis'));
         client.on('pmessage', (pattern, event, data) => {
@@ -24,6 +23,6 @@ module.exports = function (hook) {
             } catch (e) {} // Ignore catch
         });
 
-        client.psubscribe('chatcompat:*:deleteMessage', console.log);
+        client.psubscribe('chatcompat:*:deleteMessage');
     })
 };
