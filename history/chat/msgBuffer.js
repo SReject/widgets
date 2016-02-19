@@ -5,7 +5,7 @@ const _ = require('lodash');
 class ChannelHistory extends Array {
     constructor(maxLength) {
         super();
-        this.maxLength = maxLength;
+        this.maxLength = maxLength || 50;
     }
 
     push(msg) {

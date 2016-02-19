@@ -21,11 +21,15 @@ del.remove = function (channelId, messageId, deleterRoles, deleterId) {
         throw new Error('Channel not active.');
     }
     const msg = channelHistory.getMessage(messageId);
+    if (!msg) {
+        throw new Error('Message not found.');
+    }
     
     const delRole = clip.roles.getDominant(deleterRoles);
     const msgRole = clip.roles.getDominant(msg.user_roles);
     
-    const deletingOwnMessage = msg.user_id === deleterId && delRole > clip.roles.getLevel('User');
+    const deletingOwnMessage = msg.user_id === deleterId && delRole.level > clip.roles.getLevel('User');
+    
     if (!clip.roles.canAdministrate(delRole, msgRole) && !deletingOwnMessage) {
         throw new Error('Access denied.');
     }
