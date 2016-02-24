@@ -5,12 +5,12 @@ const _ = require('lodash');
 /**
  * Array like to store a channel's chat history.
  */
-class ChannelHistory extends Array {
+class ChannelHistory {
     /**
      * @param  {Number} maxLength Maximum length of the history.
      */
     constructor(maxLength) {
-        super();
+        this.container = [];
         this.maxLength = maxLength || 50;
     }
     /**
@@ -18,11 +18,11 @@ class ChannelHistory extends Array {
      * @param  {Object} msg The message object.
      */
     push(msg) {
-        if (this.length >= this.maxLength) {
+        if (this.container.length >= this.maxLength) {
             this.shift();
         }
 
-        Array.prototype.push.call(this, msg);
+        this.container.push(msg);
     }
 
     /**
@@ -31,7 +31,7 @@ class ChannelHistory extends Array {
      * @return {Message}
      */
     getMessage(id) {
-        return _.find(this, { id });
+        return _.find(this.container, { id });
     }
 
     /**
@@ -39,8 +39,8 @@ class ChannelHistory extends Array {
      * @param  {String} id The messageID
      */
     remove(id) {
-        const i = _.find(this, { id });
-        this.splice(i, 1);
+        const i = _.find(this.container, { id });
+        this.container.splice(i, 1);
     }
 }
 
