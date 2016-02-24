@@ -21,7 +21,8 @@ class ChannelHistory extends Array {
     }
 
     remove(id) {
-        _.remove(this, msg => msg.id === id);
+        const i = _.find(this, { id });
+        this.splice(i, 1);
     }
 }
 

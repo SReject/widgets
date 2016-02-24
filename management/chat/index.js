@@ -1,5 +1,4 @@
 'use strict';
-const LifeRaft = require('liferaft');
 const redis = require('redis');
 
 module.exports = function (hook) {
@@ -8,8 +7,7 @@ module.exports = function (hook) {
         const clip = require('../../clip');
         const client = redis.createClient(clip.config.get('redis'));
         client.on('pmessage', (pattern, event, data) => {
-            if (!event.match(/chatcompat\:[0-9]+\:deleteMessage/) || 
-                LifeRaft.states[clip.cluster.state] !== 'LEADER') {
+            if (!event.match(/chatcompat\:[0-9]+\:deleteMessage/)) {
                 return;
             }
             try {
@@ -17,7 +15,7 @@ module.exports = function (hook) {
             } catch (e) {
                 return;
             }
-            
+
             try {
                 require('./delete').remove(event.split(':')[1], data.id, data.user_roles, data.user_id);
             } catch (e) {} // Ignore catch
