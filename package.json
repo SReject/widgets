@@ -31,7 +31,6 @@
   "dependencies": {
     "beam-emoticons": "^0.0.11",
     "bluebird": "^2.9.14",
-    "liferaft": "^0.1.1",
     "linkify-it": "^1.0.0",
     "lodash": "^3.5.0",
     "node-uuid": "^1.4.3",

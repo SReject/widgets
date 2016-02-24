@@ -12,7 +12,7 @@ describe('management', () => {
         let mockSock, mockUser, mockChan, mockHist;
 
         beforeEach(() => {
-            
+
             mockChan = {
                 publish: sinon.stub()
             };
@@ -26,21 +26,23 @@ describe('management', () => {
             mockHist = {
                 getMessage: sinon.stub()
             };
-            
+
             clip.roles = {
                 Mod: { level: 50 },
-                User: { level: 10 }
+                User: { level: 10 },
+                getDominant: arr => clip.roles[arr[0]],
+                canAdministrate: (role, other) => role >= 25 && role - 10 >= other
             };
             clip.manager = {
                 getChannel: sinon.stub().returns(Bluebird.resolve(mockChan))
             };
-            
+
             sinon.stub(history, 'getChannelHistory').returns(mockHist);
         });
 
         afterEach(() => {
             history.getChannelHistory.restore();
-        })
+        });
 
         it('should delete when roles match up', next => {
             mockUser.getRoles.returns(["Mod"]);
@@ -50,7 +52,7 @@ describe('management', () => {
                 expect(mockChan.publish.calledWith('DeleteMessage', { id: 1337 })).to.be.true;
                 expect(err).to.be.null;
                 expect(data).to.equal('Message deleted.');
-                
+
                 next();
             });
         });
@@ -64,7 +66,7 @@ describe('management', () => {
                 expect(err).to.equal('Access denied.');
                 expect(data).to.be.undefined;
                 expect(mockChan.publish.notCalled).to.equal.true;
-                
+
                 next();
             });
         });
