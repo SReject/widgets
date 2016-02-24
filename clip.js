@@ -5,7 +5,6 @@
 //  - etcd  (promisified etcd client)
 //  - graphite (non-promisified statsd client [see MCProHosting/oxide])
 //  - log   (bunyan logger)
-//  - cluster (The raft cluster that runs the chat servers)
 //  - config
 //  - roles (The permission roles)
 module.exports = {};
