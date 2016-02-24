@@ -11,11 +11,11 @@ const history = module.exports = {};
  * Store a message in the channel history.
  */
 history.store = function (channelId, data) {
-    if (!cache.hasOwnProperty(`c${channelId}`)) {
-        cache[`c${channelId}`] = new MsgBuffer(clip.config.messages.cache);
+    if (!cache.hasOwnProperty(channelId)) {
+        cache[channelId] = new MsgBuffer(clip.config.messages.cache);
     }
 
-    const historyCache = cache[`c${channelId}`];
+    const historyCache = cache[channelId];
 
     historyCache.push(data);
 };
@@ -24,11 +24,11 @@ history.store = function (channelId, data) {
  * Delete a message from the history.
  */
 history.delete = function (channelId, msgId) {
-    if (!cache.hasOwnProperty(`c${channelId}`)) {
+    if (!cache.hasOwnProperty(channelId)) {
         return;
     }
 
-    const historyCache = cache[`c${channelId}`];
+    const historyCache = cache[channelId];
 
     historyCache.remove(msgId);
 };
@@ -37,8 +37,8 @@ history.delete = function (channelId, msgId) {
  * Return the ChannelHistory array for the specified channel.
  */
 history.getChannelHistory = function (channelId) {
-    if (cache.hasOwnProperty(`c${channelId}`)) {
-        return cache[`c${channelId}`];
+    if (cache.hasOwnProperty(channelId)) {
+        return cache[channelId];
     }
 
     return;
@@ -68,7 +68,7 @@ history.method = function (socket, args, respond) {
     const count = parseInt(args[0], 10) || 0;
 
     const historyCache = history.getChannelHistory(socket.user.getChannel().id);
-    const slice = _.takeRight(historyCache, Math.min(clip.config.get('messages.cache'), count));
+    const slice = _.takeRight(historyCache.container, Math.min(clip.config.get('messages.cache'), count));
 
     respond(null, slice);
 };
