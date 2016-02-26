@@ -23,3 +23,13 @@ random.string = function (length, set) {
 
     return out;
 };
+
+/**
+ * return a random timeout between min and max milliseconds.
+ * @param  {Number} min
+ * @param  {Number} max
+ * @return {Number}     Timeout between min and max ms.
+ */
+random.timeout = function (min, max) {
+    return Math.floor(Math.random() * max) + min;
+};
