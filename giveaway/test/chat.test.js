@@ -11,7 +11,7 @@ describe('giveaway starting', function () {
         var args = this.channel.sendMessageRaw.args[0];
         expect(args[0].getUsername()).to.equal('GiveawayBot');
         expect(args[0].getId()).to.equal(-1);
-        expect(args[0].getRoles()).to.deep.equal(['Admin']);
+        expect(args[0].getRoles()).to.deep.equal(['Founder']);
         expect(args[1]).to.deep.equal({ meta: {avatar: "https://beam.pro/_latest/img/beam-ball-small.png"}, message: '@connor4312 won the giveaway!' });
     });
 

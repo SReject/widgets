@@ -72,7 +72,7 @@ start.message = function (channel, body) {
     channel.sendMessageRaw({
         getUsername: () => 'GiveawayBot',
         getId: () => -1,
-        getRoles: () => ['Admin']
+        getRoles: () => ['Founder']
     }, { meta: {avatar: "https://beam.pro/_latest/img/beam-ball-small.png"}, message: body });
 };
 
