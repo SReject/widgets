@@ -85,13 +85,6 @@ chat.sendMessageRaw = function (channel, user, msg) {
     // Log the chat message into graphite
     var bucketName = "live."+channel.id+".chat.messages";
     clip.graphite.increment(bucketName);
-
-    // Save the message into our Cassandra archive.
-    clip.cassandra
-        .ChatMessage
-        .new()
-        .extend(message)
-        .save({ ttl: clip.config.messages.ttl });
 };
 
 /**
@@ -129,7 +122,7 @@ chat.bindChannel = function (channel) {
     channel.sendMessage = _.bind(chat.sendMessage, null, channel);
     channel.sendMessageRaw = _.bind(chat.sendMessageRaw, null, channel);
 
-    channel.on('ChatMessage', function (event, data) {
+    channel.on('ChatMessage', function (ch, data) {
         channel.broadcast('ChatMessage', data);
     });
 };
