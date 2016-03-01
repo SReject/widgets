@@ -1,11 +1,12 @@
 'use strict';
 const Bluebird = require('bluebird');
 const clip = require('../../clip');
-const _ = require('lodash');
 
 const del = module.exports = function (socket, args, respond) {
     Bluebird.try(() => {
-        return del.remove(args[0], args[1], socket.user.getRoles());
+        const user = socket.user;
+        const channel = user.getChannel();
+        return del.remove(channel.getId(), args[0], user.getId(), user.getRoles(), true);
     }).then(() => {
         respond(null, 'Message deleted.');
     }).catch(err => {
@@ -13,7 +14,7 @@ const del = module.exports = function (socket, args, respond) {
     });
 };
 
-del.remove = function (channelId, messageId, deleterRoles, deleterId) {
+del.remove = function (channelId, messageId, deleterId, deleterRoles, publish) {
     const history = require('../../history/chat/history');
 
     const channelHistory = history.getChannelHistory(channelId);
@@ -34,6 +35,13 @@ del.remove = function (channelId, messageId, deleterRoles, deleterId) {
     }
 
     return clip.manager.getChannel(channelId)
-    // Only broadcast locally, since this method is run on each chat instance.
-    .then(ch => ch.broadcast('DeleteMessage', { id: messageId }));
+    .then(ch => {
+        // Publish when it's not coming from the backend, since if it's from the
+        // backend all nodes have recieved it already.
+        if (publish) {
+            return ch.publish('DeleteMessage', { id: messageId });
+        }
+        channelHistory.remove(messageId);
+        ch.broadcast('DeleteMessage', { id: messageId });
+    });
 };

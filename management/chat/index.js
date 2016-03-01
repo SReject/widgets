@@ -17,7 +17,7 @@ module.exports = function (hook) {
             }
 
             try {
-                require('./delete').remove(event.split(':')[1], data.id, data.user_roles, data.user_id);
+                require('./delete').remove(event.split(':')[1], data.id, data.user_id, data.user_roles);
             } catch (e) {} // Ignore catch
         });
 

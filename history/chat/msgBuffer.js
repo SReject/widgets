@@ -39,8 +39,7 @@ class ChannelHistory {
      * @param  {String} id The messageID
      */
     remove(id) {
-        const i = _.find(this.container, { id });
-        this.container.splice(i, 1);
+        this.container = _.reject(this.container, { id });
     }
 }
 

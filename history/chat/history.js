@@ -136,7 +136,7 @@ history.retrieve = function (channel) {
     const uniqId = random.alphanum(5);
     const EVENT_TOKEN = `history${uniqId}`;
 
-    function resolve() {
+    function resolve () {
         channel.historyAvailable = true;
         channel.emit('historyAvailable');
 
