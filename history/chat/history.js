@@ -114,7 +114,7 @@ history.method = function (socket, args, respond) {
 
         return _.takeRight(historyCache.container, Math.min(clip.config.get('messages.cache'), count));
     }
-
+    const channel = socket.user.getChannel();
     if (!channel.historyAvailable) {
         return channel.once('historyAvailable', () => respond(null, getHist()));
     }
@@ -134,11 +134,11 @@ history.retrieve = function (channel) {
     const channelId = channel.getId();
     const prom = Bluebird.defer();
     const uniqId = random.alphanum(5);
-    const EVENT_TOKEN = `chat:${channelId}:history${uniqId}`;
+    const EVENT_TOKEN = `history${uniqId}`;
 
     function resolve() {
-        ch.historyAvailable = true;
-        ch.emit('historyAvailable');
+        channel.historyAvailable = true;
+        channel.emit('historyAvailable');
 
         prom.resolve();
     }
