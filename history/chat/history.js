@@ -67,6 +67,7 @@ history.bindChannel = function (channel) {
             history.delete(channel.id, msgId);
         });
 
+        // Listen for other instances wanting the history.
         channel.on('getHistory', (ch, uniqId) => {
             if (history.getChannelHistory(ch.getId())) {
                 // Return the history after a timeout between 50 and 1000 ms.
@@ -107,12 +108,18 @@ history.clear = function (channelId) {
 history.method = function (socket, args, respond) {
     const count = parseInt(args[0], 10) || 0;
 
-    const historyCache = history.getChannelHistory(socket.user.getChannel().id);
-    if (!historyCache) return respond(null, []);
+    function getHist() {
+        const historyCache = history.getChannelHistory(socket.user.getChannel().id);
+        if (!historyCache) return [];
 
-    const slice = _.takeRight(historyCache.container, Math.min(clip.config.get('messages.cache'), count));
+        return _.takeRight(historyCache.container, Math.min(clip.config.get('messages.cache'), count));
+    }
 
-    respond(null, slice);
+    if (!channel.historyAvailable) {
+        return channel.once('historyAvailable', () => respond(null, getHist()));
+    }
+
+    respond(null, getHist());
 };
 
 /**
@@ -129,7 +136,14 @@ history.retrieve = function (channel) {
     const uniqId = random.alphanum(5);
     const EVENT_TOKEN = `chat:${channelId}:history${uniqId}`;
 
-    const timeout = setTimeout(() => prom.resolve(), 1000);
+    function resolve() {
+        ch.historyAvailable = true;
+        ch.emit('historyAvailable');
+
+        prom.resolve();
+    }
+
+    const timeout = setTimeout(() => resolve(), 1000);
 
     history.initCache(channelId);
 
@@ -140,6 +154,8 @@ history.retrieve = function (channel) {
 
         // Store each historical message.
         data.forEach((msg) => history.store(channelId, msg));
+
+        resolve();
     });
 
     clip.redis.publish(`chat:${channelId}:getHistory`, JSON.stringify(uniqId));
