@@ -14,11 +14,14 @@ describe('management', () => {
         beforeEach(() => {
 
             mockChan = {
-                publish: sinon.stub()
+                publish: sinon.stub(),
+                getId: sinon.stub().returns(1),
+                historyAvailable: true
             };
             mockUser = {
                 getRoles: sinon.stub(),
-                getChannel: sinon.stub().returns(mockChan)
+                getChannel: sinon.stub().returns(mockChan),
+                getId: sinon.stub.returns(123)
             };
             mockSock = {
                 user: mockUser
@@ -48,7 +51,7 @@ describe('management', () => {
             mockUser.getRoles.returns(["Mod"]);
             mockHist.getMessage.returns({ id: 1337, user_roles: ["User"], channel: 1, user_id: 2, message: [] });
 
-            del(mockSock, [ 1, 1337 ], (err, data) => {
+            del(mockSock, [ 1337 ], (err, data) => {
                 expect(mockChan.publish.calledWith('DeleteMessage', { id: 1337 })).to.be.true;
                 expect(err).to.be.null;
                 expect(data).to.equal('Message deleted.');
