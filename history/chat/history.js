@@ -67,6 +67,10 @@ history.bindChannel = function (channel) {
             history.delete(channel.id, msgId);
         });
 
+        channel.on('ClearMessages', (ch) => {
+            history.clear(channel.id);
+        });
+
         // Listen for other instances wanting the history.
         channel.on('getHistory', (ch, uniqId) => {
             if (history.getChannelHistory(ch.getId())) {
