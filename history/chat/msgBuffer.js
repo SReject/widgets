@@ -19,7 +19,7 @@ class ChannelHistory {
      */
     push(msg) {
         if (this.container.length >= this.maxLength) {
-            this.shift();
+            this.container.shift();
         }
 
         this.container.push(msg);
