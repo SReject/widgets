@@ -183,6 +183,9 @@ history.returnHistory = function (channelId, uniqId) {
         .then(() => {
             const event = `chat:${channelId}:history${uniqId}`;
             const data = history.getChannelHistory(channelId);
+            if (!data) {
+                return clip.redis.publishAsync(event, JSON.stringify([]));
+            }
             return clip.redis.publishAsync(event, JSON.stringify(data.container));
         });
     });
