@@ -1,6 +1,6 @@
 {
   "name": "beam-widgets",
-  "version": "1.0.5-3",
+  "version": "1.0.6",
   "description": "Widget components of channels and chat.",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "sinon": "^1.13.0"
   },
   "dependencies": {
-    "beam-emoticons": "^0.0.12",
+    "beam-emoticons": "latest",
     "bluebird": "^2.9.14",
     "linkify-it": "^1.0.0",
     "lodash": "^3.5.0",
