@@ -28,6 +28,7 @@ resources.load = function (type, alias, handler) {
  */
 resources.bindUser = function (user) {
     user.getResource = resources.get;
+    user.on('change', () => { delete user._resourceCache });
 };
 
 /**
