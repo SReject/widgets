@@ -1,5 +1,5 @@
-var sinon = require('sinon');
 var EventEmitter = require('events').EventEmitter;
+var sinon = require('sinon');
 
 module.exports = function () {
     var channel = new EventEmitter();

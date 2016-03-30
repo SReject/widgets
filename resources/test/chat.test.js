@@ -16,6 +16,12 @@ describe('resource', function () {
         expect(resources.inQuery()).to.equal('\'a\', \'b\'');
     });
 
+    it('clears the resource cache on change', function () {
+        this.user._resourceCache = {};
+        this.user.emit('change');
+        expect(this.user._resourceCache).to.be.undefined;
+    });
+
     describe('load', function () {
         it('returns from the user cache when present', function (done) {
             this.user._resourceCache = { a: ['bar'] };
