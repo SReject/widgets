@@ -52,7 +52,7 @@ describe('giveaway starting', function () {
 
         it('errors with no results', function (done) {
             clip.mysql = { query: function (query, args, cb) {
-                expect(args).to.deep.equal([1337]);
+                expect(args).to.deep.equal([42, 1337]);
                 cb(null, []);
             }};
 
@@ -65,7 +65,7 @@ describe('giveaway starting', function () {
 
         it('calls when successful', function (done) {
             clip.mysql = { query: function (query, args, cb) {
-                expect(args).to.deep.equal([1337]);
+                expect(args).to.deep.equal([42, 1337]);
                 cb(null, [{}]);
             }};
 

@@ -18,8 +18,8 @@ start.hook = function (user, args, callback) {
     clip.mysql.query(
         'SELECT userName FROM ( ' +
             'SELECT DISTINCT userName FROM chat_user ' +
-            'WHERE online = 1 AND expires > NOW() AND channel = ?' +
-        ') as t ORDER BY RAND() LIMIT 1; ', [channel.getId()],
+            'WHERE userId <> ? AND online = 1 AND expires > NOW() AND channel = ?' +
+        ') as t ORDER BY RAND() LIMIT 1; ', [user.getId(), channel.getId()],
         function (err, result) {
             if (err || !result.length) {
                 return callback('An unknown error occurred!');
