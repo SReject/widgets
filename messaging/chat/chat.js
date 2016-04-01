@@ -46,7 +46,7 @@ chat.sendMessage = function (channel, user, message, callback) {
             callback(err);
         } else {
             chat.sendMessageRaw(channel, user, message);
-            callback();
+            callback(null, message.id);
         }
     });
 };
@@ -80,6 +80,7 @@ chat.tagMessage = function (channel, user, message) {
  */
 chat.sendMessageRaw = function (channel, user, msg) {
     var message = chat.tagMessage(channel, user, msg);
+
     channel.publish('ChatMessage', message);
 
     // Log the chat message into graphite
@@ -98,8 +99,8 @@ chat.method = function (user, args, callback) {
         return callback('You must write a message!');
     }
 
-    chat.sendMessage(user.getChannel(), user, args[0], function (err) {
-        callback(err, 'Message sent.');
+    chat.sendMessage(user.getChannel(), user, args[0], function (err, uuid) {
+        callback(err, {uuid});
     });
 };
 

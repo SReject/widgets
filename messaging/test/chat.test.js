@@ -1,6 +1,7 @@
 var expect = require('chai').expect;
 var assert = require('chai').assert;
 var sinon = require('sinon');
+const isUUID = require('uuid-validate');
 
 describe('messaging chat', function () {
     describe('transforms', function () {
@@ -215,8 +216,10 @@ describe('messaging chat', function () {
         });
         it('allows good messages', function (done) {
             var test = this;
-            chat.method(this.user, ['hello world'], function (err) {
+            chat.method(this.user, ['hello world'], function (err, data) {
                 expect(err).not.to.be.ok;
+                expect(data).to.include.keys("uuid");
+                expect(isUUID(data.uuid, 1)).to.be.true;
                 expect(chat.sendMessageRaw.args[0][0]).to.equal(test.channel);
                 expect(chat.sendMessageRaw.args[0][1]).to.equal(test.user);
                 expect(chat.sendMessageRaw.args[0][2]).to.containSubset({

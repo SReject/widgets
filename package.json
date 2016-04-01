@@ -26,7 +26,8 @@
     "gulp-load-plugins": "^0.9.0",
     "gulp-mocha": "^2.0.0",
     "jshint-stylish": "^1.0.1",
-    "sinon": "^1.13.0"
+    "sinon": "^1.13.0",
+    "uuid-validate": "^0.0.2"
   },
   "dependencies": {
     "beam-emoticons": "latest",
