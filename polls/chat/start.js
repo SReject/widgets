@@ -25,8 +25,8 @@ start.validate = function (channel, question, answers, duration) {
 };
 
 /**
- * Sets up the hash in Redis for responses to be stored in, and logs that a poll
- * started in Graphite.
+ * Sets up the hash in Redis for responses to be stored in, and logs that a
+ * poll started in Influx.
  *
  * @param  {Object} redis
  * @param  {Object}   channel
@@ -42,8 +42,6 @@ start.setupRedis = function (channel, answers, duration, callback) {
     for (var i = 0, l = answers.length; i < l; i++) {
         map[i] = 0;
     }
-
-    clip.graphite.increment("live."+channel.id+".polls.active", 1);
 
     clip.redis.multi()
         .hmset(responseSlug, map)
@@ -74,7 +72,10 @@ start.waitForEnd = function (channel, answers, duration) {
             }
 
             // Log that the poll stopped
-            clip.graphite.decrement("live."+channel.id+".polls.active", 1);
+            clip.influx.writePointAsync('polls', {
+                voters,
+                channel: channel.getId(),
+            }, {});
 
             // Then emit them across the chat servers.
             channel.publish(

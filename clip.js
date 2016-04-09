@@ -3,7 +3,7 @@
 //  - redis (promisified node-redis client)
 //  - mysql (promisified node-mysql client)
 //  - etcd  (promisified etcd client)
-//  - graphite (non-promisified statsd client [see MCProHosting/oxide])
+//  - influx (promisified influxdb client)
 //  - log   (bunyan logger)
 //  - config
 //  - roles (The permission roles)

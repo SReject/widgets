@@ -27,9 +27,5 @@ module.exports = function (user, args, callback) {
             .exec(function (err) {
                 callback(err, 'Vote recorded.');
             });
-
-        // And record the vote in graphite
-        var bucketName = "live."+channel.id+".poll.votes";
-        clip.graphite.increment(bucketName);
     });
 };

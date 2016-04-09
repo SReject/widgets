@@ -80,12 +80,7 @@ chat.tagMessage = function (channel, user, message) {
  */
 chat.sendMessageRaw = function (channel, user, msg) {
     var message = chat.tagMessage(channel, user, msg);
-
     channel.publish('ChatMessage', message);
-
-    // Log the chat message into graphite
-    var bucketName = "live."+channel.id+".chat.messages";
-    clip.graphite.increment(bucketName);
 };
 
 /**
