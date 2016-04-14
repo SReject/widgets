@@ -1,3 +1,4 @@
+'use strict';
 var clip = require('../../clip');
 
 /**
