@@ -7,8 +7,8 @@ var clip = require('../../clip');
  * @param  {Function} callback
  */
 exports.method = function (user, args, callback) {
-    var whisperTo      = args[0],
-        whisperMessage = args[1];
+    const whisperTo = args[0];
+    const whisperMessage = args[1];
 
     if (typeof whisperTo !== 'string') {
         return callback('You must say who you\'re writing to!');
